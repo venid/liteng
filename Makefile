@@ -29,7 +29,7 @@ all: CFLAGS= -c -MMD -Wall -std=c++11 -DGLM_FORCE_RADIANS $(EXT)
 
 $(FNAME): $(R_FILE)
 	$(CXX) -Wl,--no-as-needed -o $@ $(LPATH) $(R_FILE) $(LIB)
-#	lua .version util/version.h 3
+	lua .version util/version.h 3
 
 $(R_DIR)%.o: %.cpp
 	$(CXX) $(CFLAGS) $(CPATH) $(TARGET)

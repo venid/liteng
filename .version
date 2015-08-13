@@ -1,0 +1,27 @@
+
+f = assert(io.open(arg[1], "r"))
+str = f:read("*a")
+f:close()
+
+if arg[2] == "3" then
+ tmp = string.match(str, "unsigned int   BUILD = %d+")
+ number = string.match(tmp, "(%d+)")
+ str = string.gsub(str, "unsigned int   BUILD = %d+",  "unsigned int   BUILD = " .. (number + 1))
+ print("Build number "..number)
+elseif arg[2] == "2" then
+ tmp = string.match(str, "unsigned short PATCH = %d+")
+ number = string.match(tmp, "(%d+)")
+ str = string.gsub(str, "unsigned short PATCH = %d+",  "unsigned short PATCH = " .. (number + 1))
+ print("Patch number "..number)
+elseif arg[2] == "1" then
+ tmp = string.match(str, "unsigned short MINOR = %d+")
+ number = string.match(tmp, "(%d+)")
+ str = string.gsub(str, "unsigned short MINOR = %d+",  "unsigned short MINOR = " .. (number + 1))
+ str = string.gsub(str, "unsigned short PATCH = %d+",  "unsigned short PATCH = 0")
+ print("Minor version number "..number)
+end
+
+f = io.open(arg[1], "w")
+f:write(str)
+f:close()
+
