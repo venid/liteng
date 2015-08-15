@@ -67,8 +67,9 @@ check:
 
 deploy:
 	mkdir bin
-	mkdir bin/release bin/debug lib $(VPATH)
-	git init
-	git add Makefile
-	git commit -m "first commit"
+	mkdir bin/release bin/debug
+#$(VPATH)
+#	git init
+#	git add Makefile
+#	git commit -m "first commit"
 
