@@ -2,48 +2,34 @@
 #include "version.h"
 #include "log.h"
 
-#include "data.h"
+#include "luastate.h"
 
 Version VERSION;
-
-//#pragma pack (push, 1)
-struct Var
- { char flag;
-   int mas;
-   double len;
- };
-//#pragma pack (pop)
 
 int main(int argc, char *argv[])
  { if(!Log::Init(Log::Critical | Log::Error | Log::Warning | Log::Debug | Log::Info,
                     "liteng", "----- Little engine -----", VERSION.get())) return 1;
 
-   Data dt;
-   short iv = 0xabcd;
-   const char* cv = "Hello";
-   std::string str("foo");
+// проверка coroutin в lua
 
-   Var vr;
-   vr.flag = 0x02;
-   vr.mas = 1;
-   vr.len = 0;
-   LOG_INFO("Size struct Var = %i", sizeof(Var));
+   Lua::State state;
+   Lua::Thread thr = state.thread();
 
-   dt.add(iv);
-   dt.add(cv);
-   dt.add(str);
-   dt.add(vr);
-   dt.setDataFromFile("test.dat");
+   state.load_file("test.lua");
+   Lua::Var fun = state["fun"];
+   if(fun == Lua::FUN) LOG_SPAM("state.top = %i", state.top());
 
-   Data *pdt = Data::getDataFromFile("test.dat");
-   pdt->get(iv);
-   LOG_SPAM("iv = %i", iv);
-   pdt->get(str);
-   LOG_SPAM("cv-str %s", str.c_str());
-   pdt->get(str);
-   LOG_SPAM("str %s", str.c_str());
-   pdt->get(vr);
-   LOG_SPAM("vr %i, %i, %f", vr.flag, vr.mas, vr.len);
+   Lua::Var tmp = thr.run(fun, 42);
+   int i = tmp;
+   LOG_INFO("thr.status = %i, thr.result = %i state.top = %i",thr.status(), i, state.top());
+
+   tmp = thr.resume(32);
+   i = tmp;
+   LOG_INFO("thr.status = %i, thr.result = %i state.top = %i",thr.status(), i, state.top());
+
+   tmp = thr.resume(22);
+   i = tmp;
+   LOG_INFO("thr.status = %i, thr.result = %i state.top = %i",thr.status(), i, state.top());
 
    Log::Clear();
    return 0;
