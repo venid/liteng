@@ -8,8 +8,7 @@ VPATH= util core lua mod glext res comp basic inter math
 #пути включения заголовочных файлов
 CPATH= $(addprefix -I, $(VPATH) .)
 #подключаемые библиотеки
-LIB= -lrt -llua5.2 -lpthread -lX11 -lGL -lpng12 -lz -lm 
-#-lmeta
+LIB= -lrt -llua5.2 -lpthread -lX11 -lGL -lpng12 -lz -lm -lmeta
 #директория статических библиотек
 LPATH= -L./lib
 #файлы кода
