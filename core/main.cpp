@@ -2,7 +2,9 @@
 #include "version.h"
 #include "log.h"
 
-#include "luastate.h"
+#include "any.h"
+#include <vector>
+#include <string>
 
 Version VERSION;
 
@@ -10,26 +12,19 @@ int main(int argc, char *argv[])
  { if(!Log::Init(Log::Critical | Log::Error | Log::Warning | Log::Debug | Log::Info,
                     "liteng", "----- Little engine -----", VERSION.get())) return 1;
 
-// проверка coroutin в lua
+   std::vector<Any> vec;
 
-   Lua::State state;
-   Lua::Thread thr = state.thread();
+   vec.push_back(42);
+   vec.push_back("test");
+   vec.push_back(12.3f);
 
-   state.load_file("test.lua");
-   Lua::Var fun = state["fun"];
-   if(fun == Lua::FUN) LOG_SPAM("state.top = %i", state.top());
+   if(vec[0].is<int>())
+    LOG_INFO("vec[0] %i", (int)vec[0]);
 
-   Lua::Var tmp = thr.run(fun, 42);
-   int i = tmp;
-   LOG_INFO("thr.status = %i, thr.result = %i state.top = %i",thr.status(), i, state.top());
+   LOG_INFO("vec[1] %s", (const char*)vec[1]);
 
-   tmp = thr.resume(32);
-   i = tmp;
-   LOG_INFO("thr.status = %i, thr.result = %i state.top = %i",thr.status(), i, state.top());
-
-   tmp = thr.resume(22);
-   i = tmp;
-   LOG_INFO("thr.status = %i, thr.result = %i state.top = %i",thr.status(), i, state.top());
+   if(vec[2].is<float>())
+    LOG_INFO("vec[2] %f", (float)vec[2]);
 
    Log::Clear();
    return 0;
