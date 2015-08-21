@@ -2,9 +2,7 @@
 #include "version.h"
 #include "log.h"
 
-#include "any.h"
-#include <vector>
-#include <string>
+#include "object.h"
 
 Version VERSION;
 
@@ -12,19 +10,19 @@ int main(int argc, char *argv[])
  { if(!Log::Init(Log::Critical | Log::Error | Log::Warning | Log::Debug | Log::Info,
                     "liteng", "----- Little engine -----", VERSION.get())) return 1;
 
-   std::vector<Any> vec;
+   Object *obj_1, *obj_2;
 
-   vec.push_back(42);
-   vec.push_back("test");
-   vec.push_back(12.3f);
+   obj_1 = new Object("test", Object::genID());
 
-   if(vec[0].is<int>())
-    LOG_INFO("vec[0] %i", (int)vec[0]);
+   LOG_INFO("Class %s, name %s", obj_1->getClassName(), obj_1->getName());
 
-   LOG_INFO("vec[1] %s", (const char*)vec[1]);
+   if(obj_1->isClass(Object::Instance))
+    obj_2 = obj_1->retain();
 
-   if(vec[2].is<float>())
-    LOG_INFO("vec[2] %f", (float)vec[2]);
+   if(!obj_1->remove()) LOG_INFO("obj_1 no remove, refcount = %i", obj_1->getRefCount());
+
+   obj_2->release();
+   obj_1->remove();
 
    Log::Clear();
    return 0;
