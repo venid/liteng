@@ -1,7 +1,7 @@
 
 #include "component.h"
 #include "log.h"
-//#include "unit.h"
+#include "unit.h"
 #include <typeinfo>
 
 META_METHODS(Component)
@@ -36,10 +36,10 @@ void Component :: RegMeta(Lua::State& st)
     }
  }
 
-//unsigned int Component :: getUnitId()
- //{ if(m_unit) return m_unit->getId();
-   //else return 0;
- //}
+unsigned int Component :: getUnitId()
+ { if(m_unit) return m_unit->getId();
+   else return 0;
+ }
 
 // -----------------------------------------------------------
 

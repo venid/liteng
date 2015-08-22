@@ -31,7 +31,7 @@ class Component : public Object
     unsigned int getPoint() const { return m_point; }
 
     void setOwner(Unit *un) {m_unit = un;}
-    //unsigned int getUnitId();
+    unsigned int getUnitId();
 
     void setModuleId(unsigned int ID) { m_id = ID; }
     unsigned int getModuleId() { return m_id; }
