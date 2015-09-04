@@ -24,9 +24,9 @@
 class Version
  { private:
     unsigned char  MAJOR = 0;
-    unsigned short MINOR = 0;
+    unsigned short MINOR = 1;
     unsigned short PATCH = 0;
-    unsigned int   BUILD = 80; // Это значение будет изменено автоматически
+    unsigned int   BUILD = 110; // Это значение будет изменено автоматически
     char buf[32];
    public:
     /// \brief Конструктор класса создает строку версии
@@ -37,7 +37,7 @@ class Version
 
         Строка имеет вид 00.00.00.0
     */
-    const char* get() { return buf;} 
+    const char* get() { return buf;}
  };
 
-extern Version VERSION; 
+extern Version VERSION;

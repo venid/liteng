@@ -92,6 +92,14 @@ void  delVector(void* vr)
    delete (std::vector<Tp>*)vr;
  }
 
+template<>
+void delVector<Object*>(void* vr)
+ { for(auto it = ((std::vector<Object*>*)vr)->begin(); it != ((std::vector<Object*>*)vr)->end(); it++)
+    (*it)->release();
+   ((std::vector<Object*>*)vr)->clear();
+   delete (std::vector<Object*>*)vr;
+ }
+
 // -----------------------------------------------------------------------------------------------
 
 std::map<int, std::pair<void*(*)(), void(*)(void*)> > VarTable
@@ -105,11 +113,9 @@ std::map<int, std::pair<void*(*)(), void(*)(void*)> > VarTable
   { vRES_MANAGER,    {setPointer, delPointer}},
 
 //  { vLIST_RENDER,    {setGeneric, delGeneric}},
-//  { vVECTOR_SHAPE,   {setVector, delVector}},
-//  { vVECTOR_LIGHT,   {setVector, delVector}},
-//  { vVECTOR_MESH,    {setVector, delVector}},
 
-  { vVECTOR_REGION,    {setVector<Object*>, delVector<Object*>}},
+  { vVECTOR_SEGMENT,  {setVector<Object*>, delVector<Object*>}},
+  { vVECTOR_SCENE,    {setVector<Object*>, delVector<Object*>}},
 
   { vCAMERA,         {setPointer, delPointer}},
   { vCAM_POS,        {setVec3f, delVec3f}},

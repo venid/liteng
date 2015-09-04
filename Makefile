@@ -4,7 +4,7 @@ FNAME= $(shell basename `pwd`)
 #имя отладочного исполняемого файла
 FNAME_DBG= $(FNAME)_dbg
 #директории проекта
-VPATH= util core lua mod glext res comp basic inter math
+VPATH= util core lua mod glext res comp base inter math
 #пути включения заголовочных файлов
 CPATH= $(addprefix -I, $(VPATH) .)
 #подключаемые библиотеки

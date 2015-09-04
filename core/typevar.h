@@ -24,11 +24,9 @@ struct Link
 #define vPROGRAM        0x00000021
 #define vRES_MANAGER    0x00000022
 #define vLIST_RENDER    0x00000023
-#define vVECTOR_SHAPE   0x00000024
-#define vVECTOR_LIGHT   0x00000025
-#define vVECTOR_MESH    0x00000026
 
-#define vVECTOR_REGION  0x00000030
+#define vVECTOR_SEGMENT  0x00000031
+#define vVECTOR_SCENE    0x00000032
 
 #define vCAMERA         0x00000040
 #define vCAM_POS        0x00000041

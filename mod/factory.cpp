@@ -14,7 +14,7 @@
 #include <algorithm>
 
 #include "pdecoder.h"
-//#include "region.h"
+#include "matdecoder.h"
 
 META_METHODS(Factory,
  METHOD(create, Factory::Create))
@@ -62,11 +62,11 @@ bool Factory :: msg_processing()
 //  unit->addComp((Component*)pobj);
 
 
-          //addComp((Unit*)pobj);
-          //pobj->release();
+          addComp((Unit*)pobj);
+          pobj->release();
           ////LOG_SPAM("%s: количество ссылок на unit %i", getName(), ((PObject)pobj)getRefCount());
-          //Manager::sendMessage(MSG_ADD_UNIT, unit, 0);
-          //LOG_SPAM("%s: Message MSG_MAKE_UNIT", getName());
+          Manager::sendMessage(MSG_ADD_UNIT, pobj, 0);
+          LOG_SPAM("%s: Message MSG_MAKE_UNIT", getName());
           break;
          case MSG_TEST_5:
           entity.erase(std::remove_if(entity.begin(), entity.end(),
@@ -119,8 +119,8 @@ bool Factory :: init(Lua::State &lua)
        }
     }
 
-   resManager->registerDecoder(new ProgramDecoder(resManager, "shr"));
-   //resManager->registerDecoder(new MaterialDecoder(resManager, "mat"));
+   resManager->registerDecoder(new ProgramDecoder(resManager, "sh"));
+   resManager->registerDecoder(new MaterialDecoder(resManager, "mat"));
    //resManager->registerDecoder(new MeshDecoder(resManager, "ms"));
    //resManager->registerDecoder(new ImageDecoder(resManager, "png"));
 
@@ -173,15 +173,15 @@ int Factory :: clear_update(double tm)
 // --------------------------------------------------------------------------------
 
 int Factory :: res_load(luavm vm)
- { //Lua::State lua(vm);
-   //Object *obj = 0;
-   //Lua::Var tmp = lua.sig();
+ { Lua::State lua(vm);
+   Object *obj = nullptr;
+   Lua::Var tmp = lua.sig();
 
-   //if(tmp == Lua::STR)
-    //{ std::string str = tmp;
-      //obj = resManager->getObject(str);
-      //if(obj) return lua.ret(obj);
-    //}
+   if(tmp == Lua::STR)
+    { std::string str = tmp;
+      obj = resManager->getObject(str);
+      if(obj) return lua.ret(obj);
+    }
    return 0;
  }
 

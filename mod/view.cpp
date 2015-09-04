@@ -14,6 +14,8 @@
 #include <X11/Xlib.h>
 #include <GL/gl.h>
 
+#include "shader.h"
+
 META_METHODS(View,
  METHOD(create, View::Create))
 META_PROPERTY(View)
@@ -185,6 +187,15 @@ int View :: init_update(double tm)
    glXMakeCurrent(dpy, win, ctx);
 
    InitGL();
+
+   LOG_DEBUG("OpenGL: max VertexUniformComponents %i", Shader::maxVertexUniformComponents());
+   LOG_DEBUG("OpenGL: max VertexAttribs %i", Shader::maxVertexAttribs());
+   LOG_DEBUG("OpenGL: max FragmentTextureUnits %i", Shader::maxFragmentTextureUnits());
+   LOG_DEBUG("OpenGL: max VertexTextureUnits %i", Shader::maxVertexTextureUnits());
+   LOG_DEBUG("OpenGL: max CombinedTextureUnits %i", Shader::maxCombinedTextureUnits());
+   LOG_DEBUG("OpenGL: max VaryingFloats %i", Shader::maxVaryingFloats());
+   LOG_DEBUG("OpenGL: max FragmentUniformComponents %i", Shader::maxFragmentUniformComponents());
+   LOG_DEBUG("OpenGL: max TextureCoords %i", Shader::maxTextureCoords());
 
    glClearColor ( 0.05, 0.05, 0.05, 1 );
    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
