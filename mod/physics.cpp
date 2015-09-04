@@ -23,7 +23,8 @@ Physics :: Physics(const char* Name) : Module(Name)
  }
 
 void Physics :: set_var()
- { pool.emplace(vDELTA_TIME, Link{1, new double});
+ { mp_delta = new double;
+   pool.emplace(vDELTA_TIME, Link{1, mp_delta});
  }
 
 bool Physics :: init(Lua::State &lua)
