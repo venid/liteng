@@ -26,7 +26,7 @@ class Version
     unsigned char  MAJOR = 0;
     unsigned short MINOR = 1;
     unsigned short PATCH = 0;
-    unsigned int   BUILD = 110; // Это значение будет изменено автоматически
+    unsigned int   BUILD = 168; // Это значение будет изменено автоматически
     char buf[32];
    public:
     /// \brief Конструктор класса создает строку версии

@@ -23,7 +23,7 @@ struct Link
 
 #define vPROGRAM        0x00000021
 #define vRES_MANAGER    0x00000022
-#define vLIST_RENDER    0x00000023
+#define vLIST_DRAW      0x00000023
 
 #define vVECTOR_SEGMENT  0x00000031
 #define vVECTOR_SCENE    0x00000032

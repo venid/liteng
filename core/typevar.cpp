@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include "object.h"
-//#include "vertex.h"
+#include "vertex.h"
 //#include "frustrum.h"
 #include "timer.h"
 //#include "bounding.h"
@@ -17,9 +17,6 @@ void  delInt(void* vr) { delete (int*)vr; }
 void* setFloat() { return new float(0.f); }
 void* setFloat(float vol) { return new float(vol); }
 void  delFloat(void* vr) { delete (float*)vr; }
-
-void* setDouble() { return new double(0.0); }
-void  delDouble(void* vr) { delete (double*)vr; }
 
 void* setVec2i() { return new glm::ivec2(0); }
 void* setVec2i(int x, int y) { return new glm::ivec2(x, y); }
@@ -43,12 +40,12 @@ void  delQuat(void* vr) { delete (glm::quat*)vr; }
 //void* setFrustrum() { return new Frustrum(); }
 //void  delFrustrum(void* vr) { delete (Frustrum*)vr; }
 
-//void* setGeneric()
- //{ Generic** pv = new Generic*;
-   //*pv = nullptr;
-   //return pv;
- //}
-//void  delGeneric(void* vr) { delete (Generic**)vr; }
+void* setGeneric()
+ { Generic** pv = new Generic*;
+   *pv = nullptr;
+   return pv;
+ }
+void  delGeneric(void* vr) { delete (Generic**)vr; }
 
 void* setLua() { return new Lua::State(); }
 void  delLua(void* vr) { delete (Lua::State*)vr; }
@@ -84,40 +81,56 @@ void  delPObject(void* vr)
  }
 
 template<typename Tp>
-void* setVector() { return new std::vector<Tp>; }
+void* getVar() { return new Tp; }
 
 template<typename Tp>
-void  delVector(void* vr)
+void delVar(void* vr) { delete (Tp*)vr; }
+
+template<>
+void delVar<Object**>(void* vr)
+ { Object** obj = (Object**)vr;
+   (*obj)->release();
+   delete obj;
+ }
+
+template<typename Tp>
+void* getVec() { return new std::vector<Tp>; }
+
+template<typename Tp>
+void  delVec(void* vr)
  { ((std::vector<Tp>*)vr)->clear();
    delete (std::vector<Tp>*)vr;
  }
 
 template<>
-void delVector<Object*>(void* vr)
+void delVec<Object*>(void* vr)
  { for(auto it = ((std::vector<Object*>*)vr)->begin(); it != ((std::vector<Object*>*)vr)->end(); it++)
     (*it)->release();
    ((std::vector<Object*>*)vr)->clear();
    delete (std::vector<Object*>*)vr;
  }
 
-// -----------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
+
+#define VAR(Tp) {getVar<Tp>, delVar<Tp>}
+#define VEC(Tp) {getVec<Tp>, delVec<Tp>}
 
 std::map<int, std::pair<void*(*)(), void(*)(void*)> > VarTable
  {{ vWIN_RECT,       {setVec2i, delVec2i}},
   { vCURSOR,         {setVec2i, delVec2i}},
   { vLVM,            {setPointer, delPointer}},
   { vTIMER,          {setTimer, delTimer}},
-  { vDELTA_TIME,     {setDouble, delDouble}},
+  { vDELTA_TIME,     VAR(double)},
 
   { vPROGRAM,        {setPointer, delPointer}},
-  { vRES_MANAGER,    {setPointer, delPointer}},
+  { vRES_MANAGER,    VAR(void*)},
 
-//  { vLIST_RENDER,    {setGeneric, delGeneric}},
+  { vLIST_DRAW,      {setGeneric, delGeneric}},
 
-  { vVECTOR_SEGMENT,  {setVector<Object*>, delVector<Object*>}},
-  { vVECTOR_SCENE,    {setVector<Object*>, delVector<Object*>}},
+  { vVECTOR_SEGMENT, VEC(Object*)},
+  { vVECTOR_SCENE,   VEC(Object*)},
 
-  { vCAMERA,         {setPointer, delPointer}},
+  { vCAMERA,         VAR(void*)},
   { vCAM_POS,        {setVec3f, delVec3f}},
   { vCAM_TRANSLATE,  {setMat4f, delMat4f}},
   { vCAM_VIEW,       {setMat4f, delMat4f}},
