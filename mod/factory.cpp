@@ -15,6 +15,7 @@
 
 #include "pdecoder.h"
 #include "matdecoder.h"
+#include "meshdecoder.h"
 
 META_METHODS(Factory,
  METHOD(create, Factory::Create))
@@ -43,9 +44,6 @@ bool Factory :: msg_processing()
  { int tMsg, param;
    Object* pobj;
 
-   //Unit *unit;
-  // unsigned int mid;
-
    while(Manager::getMessage(getNumQueue(), tMsg, pobj, param))
     { switch(tMsg)
        { case MSG_ADD_UNIT:
@@ -54,14 +52,6 @@ bool Factory :: msg_processing()
           else LOG_ERROR("%s: неплановое удаление unit", getName());
           break;
          case MSG_MAKE_UNIT:
-
-//  unit = new Unit("region");
-//  pobj = new Region(1);
-//  mid = Module::getModuleID("Physics");
-//  ((Component*)pobj)->setModuleId(mid);
-//  unit->addComp((Component*)pobj);
-
-
           addComp((Unit*)pobj);
           pobj->release();
           ////LOG_SPAM("%s: количество ссылок на unit %i", getName(), ((PObject)pobj)getRefCount());
@@ -121,7 +111,7 @@ bool Factory :: init(Lua::State &lua)
 
    resManager->registerDecoder(new ProgramDecoder(resManager, "sh"));
    resManager->registerDecoder(new MaterialDecoder(resManager, "mat"));
-   //resManager->registerDecoder(new MeshDecoder(resManager, "ms"));
+   resManager->registerDecoder(new MeshDecoder(resManager, "ms"));
    //resManager->registerDecoder(new ImageDecoder(resManager, "png"));
 
    LOG_INFO("%s: first init.", getName());
