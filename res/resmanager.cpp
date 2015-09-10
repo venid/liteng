@@ -73,7 +73,7 @@ void ResManager :: regObject(Object* obj)
      { LOG_WARNING("ResManager: %s, is not possible to register the resource.(name clash)", Name);
        return;
      }
-   storage.push_back(obj->retain());
+   storage.push_back(obj);
  }
 
 bool ResManager :: saveResource(const std::string& theName, Data *data)
