@@ -188,6 +188,9 @@ int View :: init_update(double tm)
 
    InitGL();
 
+   LOG_INFO("OpenGL: Vendor %s", glGetString(GL_VENDOR));
+   LOG_INFO("OpenGL: Renderer %s", glGetString(GL_RENDERER));
+   LOG_INFO("OpenGL: Version %s", glGetString(GL_VERSION));
    LOG_DEBUG("OpenGL: max VertexUniformComponents %i", Shader::maxVertexUniformComponents());
    LOG_DEBUG("OpenGL: max VertexAttribs %i", Shader::maxVertexAttribs());
    LOG_DEBUG("OpenGL: max FragmentTextureUnits %i", Shader::maxFragmentTextureUnits());

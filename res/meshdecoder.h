@@ -14,6 +14,4 @@ class MeshDecoder : public ResDecoder
    MeshDecoder(ResManager *theManager, const char* ext);
 
    Object* decode(const std::string &theName);
-
-
 };

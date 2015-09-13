@@ -25,7 +25,7 @@ Noise::Perlin :: Perlin(int seed)
  { m_octaves = 1;
    m_frequency = 1.f;
    m_amplitude = 1.f;
-   init(seed);      
+   init(seed);
  }
 
 void Noise::Perlin :: init(int seed)

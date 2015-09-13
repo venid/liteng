@@ -24,7 +24,6 @@ class Factory : public Module
     int clear_update(double);
 
     static int res_load(luavm vm);
-    //static int res_build(luavm vm);
     static int res_load_data(luavm vm);
     static int send_message(luavm vm);
     static int create_unit(luavm vm);

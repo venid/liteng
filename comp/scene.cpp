@@ -27,7 +27,7 @@ META_OBJECT(Build, Scene::Build, &Component::Instance)
 int Render :: privat_tab[] = {vVECTOR_SEGMENT, 0};
 int Render :: public_tab[] = {vVECTOR_SCENE, 0};
 
-int Build :: privat_tab[] = {vVECTOR_SEGMENT,  0};
+int Build :: privat_tab[] = {vVECTOR_SEGMENT, 0};
 int Build :: public_tab[] = {vRES_MANAGER, 0};
 
 // ---------------------------------------------------------------
@@ -52,8 +52,8 @@ void Render :: linkVar(int def, void* data)
  }
 
 void Render :: doUpdate()
- {
-
+ { for(auto it = mp_segment->begin(); it != mp_segment->end(); it++)
+    (*it)->update();
  }
 
 bool Render :: init()
@@ -150,6 +150,4 @@ bool Build :: init()
  }
 
 void Build :: doUpdate()
- {
-
- }
+ { }

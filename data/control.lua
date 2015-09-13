@@ -3,7 +3,7 @@ do
  local param =
   { name = "game",
     { comp = "Event::Key", module = "Control", point = 9, key = 27, fun = Load_data("event/game/1.lua")},
---    { comp = "Event::Key", module = "Control", point = 9, key = 190, fun = Load_data("event/game/2.lua")} 
+    { comp = "Event::Key", module = "Control", point = 9, key = 190, fun = Load_data("event/game/2.lua")}
   }
  local tmp = Unit(param);
  Message(0x00000030, 0, tmp);

@@ -59,12 +59,12 @@ bool Factory :: msg_processing()
           LOG_SPAM("%s: Message MSG_MAKE_UNIT", getName());
           break;
          case MSG_TEST_5:
-          entity.erase(std::remove_if(entity.begin(), entity.end(),
-                      [](Unit* un)->bool {return un->remove();}),
-                      entity.end());
+          //entity.erase(std::remove_if(entity.begin(), entity.end(),
+                      //[](Unit* un)->bool {return un->remove();}),
+                      //entity.end());
           LOG_SPAM("%s: Message MSG_TEST_5", getName());
-          //for(auto &it : components)
-           //it.second->update();
+          for(auto &it : components)
+           it.second->update();
           break;
          case MSG_FINISH:
           do_update = (MUpdate) &Factory::clear_update;

@@ -14,12 +14,15 @@ class Segment : public Object
  { private:
     std::vector<Shape*> m_shape;
 
+    glm::mat4 m_trans;
+
    public:
     Segment();
     ~Segment();
 
     bool init();
     void clear();
+    void update();
 
     void addShape(Shape* shape);
 

@@ -29,6 +29,11 @@ void Segment :: clear()
     it->clear();
  }
 
+void Segment :: update()
+ { for(auto it : m_shape)
+    it->update();
+ }
+
 void Segment :: addShape(Shape* shape)
  { m_shape.push_back(shape); }
 

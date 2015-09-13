@@ -31,6 +31,9 @@ void Shape :: clear()
    if(m_mesh != nullptr) m_mesh->clear();
  }
 
+void Shape :: update()
+ { if(m_mesh != nullptr) m_mesh->update(); }
+
 void Shape :: setMaterial(Material* mat)
  { if(m_material != nullptr) m_material->release();
 

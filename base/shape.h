@@ -24,6 +24,7 @@ class Shape : public Object
 
     bool init();
     void clear();
+    void update();
 
     void setMaterial(Material* mat);
     void setMesh(Mesh* mesh);
