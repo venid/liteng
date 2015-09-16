@@ -21,6 +21,9 @@ class Render : public Component
     std::vector<Segment*> *mp_segment;
     std::vector<Object*> *mp_scenes;
 
+    glm::mat4 *mp_trans;
+    glm::mat4 m_trans;
+
    public:
     Render(unsigned int pt);
     ~Render() {}
@@ -45,10 +48,44 @@ class Render : public Component
 
 // -------------------------------------------------------
 
+class Behavior : public Component
+ { private:
+    std::vector<Segment*> *mp_segment;
+    std::vector<Object*> *mp_scenes;
+
+    glm::mat4 *mp_trans;
+    glm::mat4 m_trans;
+
+   public:
+    Behavior(unsigned int pt);
+    ~Behavior() {}
+
+    void linkVar(int def, void* data);
+
+    bool init();
+    void clear();
+
+    void doUpdate();
+
+    void move();
+
+    static Object* Create(Lua::Var* tab, unsigned int m_p)
+     {return new Behavior(m_p);}
+
+    static int privat_tab[];
+    static int public_tab[];
+    static Meta::Base Instance;
+ };
+
+// -------------------------------------------------------
+
 class Build : public Component
  { private:
     std::vector<Segment*> *mp_segment;
     ResManager *mp_res;
+
+    glm::mat4 *mp_trans;
+
    public:
     Build(unsigned int pt);
     ~Build() {}

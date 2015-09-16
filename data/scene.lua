@@ -6,4 +6,13 @@ do
   }
  local tmp = Unit(param);
  Message(0x00000031, 0, tmp);
+
+ param =
+  {  name = "test_part",
+    { comp = "Scene::Render", module = "View", point = 2 },
+    { comp = "Scene::Behavior", module = "Physics", point = 2},
+    { comp = "Scene::Build", module = "Factory", point = 2}
+  }
+ tmp = Unit(param);
+ Message(0x00000031, 0, tmp);
 end

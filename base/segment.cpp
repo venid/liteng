@@ -7,7 +7,7 @@ META_METHODS(Segment)
 META_PROPERTY(Segment)
 META_OBJECT(Segment, Segment, &Object::Instance)
 
-Segment :: Segment() : Object()
+Segment :: Segment() : Object(), m_trans(1.f)
  {
    metaClass = &Instance;
  }
@@ -40,9 +40,10 @@ void Segment :: addShape(Shape* shape)
 int Segment :: isVisible(Generic** head, MemoryPool<Generic> &pool,
                          Frustrum &frustrum, glm::mat4 &trans)
  { int res = 0;
+   glm::mat4 tmp = trans * m_trans;
 
    for(auto it : m_shape)
-    res += it->isVisible(head, pool, frustrum, trans);
+    res += it->isVisible(head, pool, frustrum, tmp);
 
    return res;
  }

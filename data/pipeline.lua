@@ -20,4 +20,11 @@ do
   }
  tmp = Unit(param);
  Message(0x00000030, 0, tmp);
+
+ param =
+  { name = "dynamics_pipeline",
+    { comp = "Dynamics::Scenes", module = "Physics", point = 3}
+  }
+ tmp = Unit(param);
+ Message(0x00000030, 0, tmp);
 end
