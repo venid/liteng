@@ -79,6 +79,33 @@ class Behavior : public Component
 
 // -------------------------------------------------------
 
+class Control : public Component
+ { private:
+    Lua::State *lvm;
+
+   public:
+    Control(unsigned int pt);
+    ~Control() { }
+
+    void linkVar(int def, void* data);
+
+    bool init();
+
+    void doUpdate();
+
+    static Object* Create(Lua::Var* tab, unsigned int m_p)
+     { return new Control(m_p); }
+
+//    void move(int dir);
+
+    static int privat_tab[];
+    static int public_tab[];
+
+    static Meta::Base Instance;
+ };
+
+// ------------------------------------------------------
+
 class Build : public Component
  { private:
     std::vector<Segment*> *mp_segment;

@@ -70,6 +70,8 @@ class Translate : public Component
     glm::mat4 m_matrix;
     glm::quat m_orientation;
     glm::vec3 m_pos;
+    glm::vec3 m_target;
+
     glm::vec3 *mp_pos;
 
     void updateTransMatrix();

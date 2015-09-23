@@ -24,6 +24,11 @@ META_METHODS(Behavior,
 META_PROPERTY(Behavior)
 META_OBJECT(Behavior, Scene::Behavior, &Component::Instance)
 
+META_METHODS(Control,
+ METHOD(create, Control::Create))
+META_PROPERTY(Control)
+META_OBJECT(Control, Scene::Control, &Component::Instance)
+
 META_METHODS(Build,
  METHOD(create, Build::Create))
 META_PROPERTY(Build)
@@ -34,6 +39,9 @@ int Render :: public_tab[] = {vVECTOR_SCENE, 0};
 
 int Behavior :: privat_tab[] = {vVECTOR_SEGMENT, vTRANSLATE, 0};
 int Behavior :: public_tab[] = {vVECTOR_SCENE, 0};
+
+int Control :: privat_tab[] = {0};
+int Control :: public_tab[] = {0};
 
 int Build :: privat_tab[] = {vVECTOR_SEGMENT, vTRANSLATE, 0};
 int Build :: public_tab[] = {vRES_MANAGER, 0};
@@ -160,13 +168,37 @@ void Behavior :: doUpdate()
  }
 
 void Behavior :: move()
- { glm::vec3 tmp(0.f, 0.01f, 0.f);
+ { glm::vec3 tmp(0.02f, 0.f, 0.015f);
 
    tmp *= CONST_DELTA_TIME;
-   //m_trans[3][0] += tmp.x;
+   m_trans[3][0] += tmp.x;
    m_trans[3][1] += tmp.y;
-   
+   m_trans[3][2] += tmp.z;
  }
+
+// ---------------------------------------------------------------
+
+Control :: Control(unsigned int pt) : Component(pt)
+ { m_update = (CUpdate) &Control::doUpdate;
+   privat_var = Control::privat_tab;
+   public_var = Control::public_tab;
+   m_id = 0;
+   metaClass = &Instance;
+ }
+
+void Control :: linkVar(int def, void* data)
+ { switch(def)
+    { 
+    }
+ }
+
+bool Control :: init()
+ {
+   return true;
+ }
+
+void Control :: doUpdate()
+ { }
 
 // ---------------------------------------------------------------
 

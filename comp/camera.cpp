@@ -140,6 +140,7 @@ Translate :: Translate(unsigned int pt) : Component(pt)
 
    m_orientation = glm::quat(1.f, 0.f, 0.f, 0.f);
    m_pos = glm::vec3(0.f);
+   m_target = glm::vec3(0.f);
 
    privat_var = Translate::privat_tab;
    m_update = (CUpdate)&Translate::doUpdate;
@@ -188,7 +189,7 @@ void Translate :: updateTransMatrix()
  { m_matrix = glm::mat4_cast(m_orientation);
 
    glm::vec3 zAxis = glm::vec3(m_matrix[0][2], m_matrix[1][2], m_matrix[2][2]);
-   m_pos = zAxis * m_orbitDist;
+   m_pos = m_target + zAxis * m_orbitDist;
 
    m_matrix[3][0] = - glm::dot(glm::vec3(m_matrix[0][0], m_matrix[1][0], m_matrix[2][0]), m_pos);
    m_matrix[3][1] = - glm::dot(glm::vec3(m_matrix[0][1], m_matrix[1][1], m_matrix[2][1]), m_pos);
