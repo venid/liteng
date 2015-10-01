@@ -35,10 +35,14 @@ class Make : public Component
     void build(Mesh* mesh, unsigned int sz);
 
     void frame1(int x, int y, int z, glm::vec3* points, float scale);
-    void rotate(Cell* cell, glm::ivec3 &rot);
+    void rotateX(Cell* cell, int n);
+    void rotateY(Cell* cell, int n);
+    void rotateZ(Cell* cell, int n);
+    void face_ratio(char &f1, char &f2);
+    int triangles(char face, glm::ivec4 &pt, glm::ivec3& tr1, glm::ivec3 &tr2);
 
     void face_box(Cell *cell);
-   
+
    public:
     Make(Lua::Var &tab, unsigned int pt);
     ~Make() {}
