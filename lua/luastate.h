@@ -229,6 +229,13 @@ class State
    inline int top() { return lua_gettop(vm); }
    inline int status() { return lua_status(vm); }
 
+   template<typename... Tp>
+   void yield(Tp... args)
+    { int sz = sizeof...(args);
+      _set(vm, args...);
+      lua_yield(vm, sz);
+    }
+
    inline Thread thread() { return Thread(this); }
 
    inline Var new_tab()
