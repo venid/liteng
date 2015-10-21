@@ -3,9 +3,12 @@
 
 #include "component.h"
 #include <vector>
+#include <queue>
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include "vertex.h"
 #include "MemoryPool.h"
+#include "typevar.h"
 
 namespace Lua { class Var; }
 
@@ -53,8 +56,22 @@ class Behavior : public Component
     std::vector<Segment*> *mp_segment;
     std::vector<Object*> *mp_scenes;
 
+    Operation* mp_opt;
+    Operation m_opt;
+
     glm::mat4 *mp_trans;
     glm::mat4 m_trans;
+
+    double max_speed;
+    double speed;
+    float acceleration;
+    float start;
+    double delta;
+    double balance;
+
+    glm::quat m_rot;
+    glm::quat m_rotate;
+    float acceleration_rot;
 
    public:
     Behavior(unsigned int pt);
@@ -67,7 +84,9 @@ class Behavior : public Component
 
     void doUpdate();
 
-    void move();
+    void frame();
+    void moveUp();
+    void rotate();
 
     static Object* Create(Lua::Var* tab, unsigned int m_p)
      {return new Behavior(m_p);}
@@ -83,6 +102,9 @@ class Control : public Component
  { private:
     Lua::State *lvm;
 
+    Operation* mp_opt;
+    std::queue<Operation> m_opt;
+
    public:
     Control(unsigned int pt);
     ~Control() { }
@@ -96,7 +118,8 @@ class Control : public Component
     static Object* Create(Lua::Var* tab, unsigned int m_p)
      { return new Control(m_p); }
 
-//    void move(int dir);
+    void move(int flag, int dist);
+    void rotate(int flag, int param);
 
     static int privat_tab[];
     static int public_tab[];

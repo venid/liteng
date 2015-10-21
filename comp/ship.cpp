@@ -271,6 +271,7 @@ void Make :: build(Mesh* mesh, unsigned int sz)
       }
 
    mesh->setVertex(vrt, i);
+   mesh->computeNormals();
  }
 
 void Make :: frame1(int x, int y, int z, glm::vec3* points, float scale)

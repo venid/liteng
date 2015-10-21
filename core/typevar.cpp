@@ -56,6 +56,9 @@ void  delTimer(void* vr) { delete (Timer*)vr; }
 //void* setBounding() { return new Bounding(); }
 //void  delBounding(void* vr) { delete (Bounding*)vr; }
 
+void* setOperation() { return new Operation; }
+void  delOperation(void* vr) { delete (Operation*)vr; }
+
 void* setPointer()
  { void** vd = new void*;
    *vd = nullptr;
@@ -141,9 +144,10 @@ std::map<int, std::pair<void*(*)(), void(*)(void*)> > VarTable
   { vCAM_CONTROL,    {setInt, delInt}},
 
   { vTRANSLATE,      {setMat4f, delMat4f}},
-  { vMESH,           {setPointer, delPointer}},
-  { vORIENTATION,    {setQuat, delQuat}},
+  { vOPERATION,      {setOperation, delOperation}},
+//  { vORIENTATION,    {setQuat, delQuat}},
   { vPOSITION,       {setVec3f, delVec3f}},
+  { vMESH,           {setPointer, delPointer}},
   { vMATERIAL,       {setPointer, delPointer}},
 //  { vBOUNDING,       {setBounding, delBounding}},
 

@@ -17,6 +17,18 @@ void Data :: realloc(unsigned int len)
    bits = tmp;
  }
 
+void Data :: move(Data &data)
+ { bits = data.bits;
+   length = data.length;
+   max_len = data.max_len;
+   pos = data.pos;
+
+   data.bits = nullptr;
+   data.length = 0;
+   data.max_len = 0;
+   data.pos = 0;
+ }
+
 template<>
 bool Data :: get(std::string &vol)
  { if(bits == nullptr) return false;

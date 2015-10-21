@@ -20,7 +20,9 @@ Factory =
    data =
     { "pipeline.lua",
       "control.lua",
-      "scene.lua"
+      "scene.lua",
+
+      "script.lua"
     }
  }
 

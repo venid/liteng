@@ -13,9 +13,9 @@ uniform struct Material
  } material;
 
 void main(void)
- { vec4	c = texture2D ( material.map1, coord ); 
+ { vec4 c = texture2D ( material.map1, coord );
    float l = dot(normalize(norm), ldir);
    c *= l;
-   vec4 color = clamp(l * (material.diffuse), 0.05, 1.0); 
-   gl_FragColor = material.diffuse; //color * c;
+   vec4 color = clamp(l * (material.diffuse), 0.1, 1.0);
+   gl_FragColor = color; // * c;
  }

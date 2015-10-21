@@ -48,6 +48,8 @@ class Data
         }
      }
 
+    void move(Data &data);
+
     int getLength() const
      { return length; }
 

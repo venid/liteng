@@ -12,7 +12,7 @@ META_METHODS(Control,
 META_PROPERTY(Control)
 META_OBJECT(Control, Control, &Module::Instance)
 
-unsigned int Control :: messages_list[] = {MSG_FINISH, MSG_ADD_UNIT, 0};
+unsigned int Control :: messages_list[] = {MSG_FINISH, MSG_ADD_UNIT, MSG_ADD_SCRIPT, 0};
 
 // ----------------------------------------------------------------------------------
 
@@ -36,10 +36,18 @@ void Control :: set_var()
 bool Control :: msg_processing()
  { int tMsg, param;
    Object* pobj;
+   Data* data;
 
    while(Manager::getMessage(getNumQueue(), tMsg, pobj, param))
     { switch(tMsg)
-       { case MSG_ADD_UNIT:
+       { case MSG_ADD_SCRIPT:
+          if(pobj)
+           { data = pobj->stash;
+             lvm.load_data(data);
+             pobj->release();
+           }
+          break;
+         case MSG_ADD_UNIT:
           addComp((Unit*)pobj);
           pobj->release();
           break;

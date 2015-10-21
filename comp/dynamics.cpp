@@ -49,7 +49,7 @@ void Scenes :: doUpdate()
     { time -= CONST_DELTA_TIME;
 
       for(auto &it : *mp_scenes)
-       it->move();
+       it->frame();
 
       n++;
       if(n == MAX_ITERATION)

@@ -175,21 +175,34 @@ void Mesh :: computeNormals()
  { unsigned int k;
    glm::vec3 nv;
 
-   for (k=0; k < numV; k++)
-     vert[k].norm = glm::vec3(0.f);
+   if(face)
+    { for (k=0; k < numV; k++)
+       vert[k].norm = glm::vec3(0.f);
 
-   k = 0;
-   while (k < numF)
-    { nv = glm::triangleNormal(vert[face[k].index[0]].pos,
-                               vert[face[k].index[1]].pos,
-                               vert[face[k].index[2]].pos);
-      vert[face[k].index[0]].norm += nv;
-      vert[face[k].index[1]].norm += nv;
-      vert[face[k].index[2]].norm += nv;
-      k++;
+      k = 0;
+      while (k < numF)
+       { nv = glm::triangleNormal(vert[face[k].index[0]].pos,
+                                  vert[face[k].index[1]].pos,
+                                  vert[face[k].index[2]].pos);
+         vert[face[k].index[0]].norm += nv;
+         vert[face[k].index[1]].norm += nv;
+         vert[face[k].index[2]].norm += nv;
+         k++;
+       }
+      for (k=0; k < numV; k++)
+       vert[k].norm = glm::normalize(vert[k].norm);
     }
-   for (k=0; k < numV; k++)
-     vert[k].norm = glm::normalize(vert[k].norm);
+   else
+    { for (k = 0; k < numV;)
+       { nv = glm::triangleNormal(vert[k].pos,
+                                  vert[k + 1].pos,
+                                  vert[k + 2].pos);
+         vert[k].norm = nv;
+         vert[k + 1].norm = nv;
+         vert[k + 2].norm = nv;
+         k += 3;
+       }
+    }
  }
 
 // ------------------------------------------------------------------------

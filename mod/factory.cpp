@@ -121,8 +121,9 @@ bool Factory :: init(Lua::State &lua)
 int Factory :: init_update(double tm)
  { Data *data;
 
-   lvm.reg("Load", res_load);
+   lvm.reg("Load", res_load_object);
    lvm.reg("Load_data", res_load_data);
+   lvm.reg("Load_script", res_load_script);
    lvm.reg("Unit", create_unit);
    lvm.reg("Message", send_message);
 
@@ -162,7 +163,7 @@ int Factory :: clear_update(double tm)
 
 // --------------------------------------------------------------------------------
 
-int Factory :: res_load(luavm vm)
+int Factory :: res_load_object(luavm vm)
  { Lua::State lua(vm);
    Object *obj = nullptr;
    Lua::Var tmp = lua.sig();
@@ -184,6 +185,24 @@ int Factory :: res_load_data(luavm vm)
     { std::string str = tmp;
       data = resManager->getResource(str);
       if(data) return lua.ret(data);
+    }
+   return 0;
+ }
+
+int Factory :: res_load_script(luavm vm)
+ { Lua::State lua(vm);
+   Object *obj = nullptr;
+   Data* data = nullptr;
+   Lua::Var tmp = lua.sig();
+
+   if(tmp == Lua::STR)
+    { std::string str = tmp;
+      data = resManager->getResource(str);
+      if(data)
+       { obj = new Object(str.c_str());
+         obj->stash = data;
+         int n = Manager::sendMessage(MSG_ADD_SCRIPT, obj, 0);
+       }
     }
    return 0;
  }

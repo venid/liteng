@@ -18,5 +18,7 @@
 #define MSG_ADD_UNIT      0x00000030
 #define MSG_MAKE_UNIT     0x00000031
 
+#define MSG_ADD_SCRIPT    0x00000040
+#define MSG_RUN_SCRIPT    0x00000041
 
 #endif // DEFS_H_INCLUDED

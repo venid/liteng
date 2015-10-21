@@ -40,17 +40,24 @@ struct Link
 #define vCAM_CONTROL    0x00000048
 
 #define vTRANSLATE      0x00000051
-#define vMESH           0x00000052
+#define vOPERATION      0x00000052
 #define vORIENTATION    0x00000053
 #define vPOSITION       0x00000054
-#define vMATERIAL       0x00000055
-#define vBOUNDING       0x00000056
+#define vMESH           0x00000055
+#define vMATERIAL       0x00000056
+#define vBOUNDING       0x00000057
 
 #define vFBO_GEOM       0x00000061
 #define vFBO_COLOR      0x00000062
 #define vFBO_LIGHT      0x00000063
 
 #define vGUI_COLOR_WIN  0x00000081
+
+struct Operation
+ { int flag;
+   int type;
+   int param;
+ };
 
 void* setInt(int val);
 void* setVec2i(int x, int y);
