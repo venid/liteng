@@ -73,6 +73,7 @@ bool Render :: init()
    m_fovY = 1.f / tanf(0.5f * m_fov);
    m_fovX = m_fovY / aspectRation;
    m_proj = glm::perspective(m_fov, aspectRation, m_znear, m_zfar);
+   m_ortho = glm::ortho(0.f, (float)rect.x, 0.f, (float)rect.y);
    return true;
  }
 
@@ -136,11 +137,11 @@ void Render :: buildFrustrum(glm::mat4& mt)
 // --------------------------------------------------------------
 
 Translate :: Translate(unsigned int pt) : Component(pt)
- { m_orbitDist = 5.f;
+ { m_orbitDist = 15.f;
 
    m_orientation = glm::quat(1.f, 0.f, 0.f, 0.f);
    m_pos = glm::vec3(0.f);
-   m_target = glm::vec3(0.f);
+   m_target = glm::vec3(0.f, 3.f, 0.f);
 
    privat_var = Translate::privat_tab;
    m_update = (CUpdate)&Translate::doUpdate;

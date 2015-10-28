@@ -15,6 +15,7 @@ class Render : public Component
     glm::ivec2 rect;
 
     glm::mat4 m_proj;
+    glm::mat4 m_ortho;
     glm::mat4 m_view;
     glm::mat4 m_pvMatrix;
 
@@ -46,6 +47,7 @@ class Render : public Component
 
     Frustrum& getFrustrum() { return m_frustrum; }
     glm::mat4& getPVMat() { return m_pvMatrix; }
+    glm::mat4& getOrthoMat() { return m_ortho; }
 
     static Object* Create(Lua::Var* tab, unsigned int m_p)
      {return new Render(*tab, m_p);}
