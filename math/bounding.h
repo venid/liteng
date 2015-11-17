@@ -57,7 +57,7 @@ class OBBox
     void setPos(const glm::vec3 &pos);
     void setScale(const glm::vec3 &scale) {m_scale = scale;}
     void setTransform(const glm::mat4 &matrix);
-    void move(const glm::mat4 &matrix) { m_trans *= matrix; }
+    void move(const glm::mat4 &matrix);
 
     const glm::vec3& getScale() const { return m_scale; }
     const glm::vec3& getPos() const { return m_pos; }

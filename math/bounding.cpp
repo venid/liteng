@@ -132,6 +132,11 @@ void OBBox :: setTransform(const glm::mat4 &matrix)
    m_pos = glm::vec3(m_trans[3][0], m_trans[3][1], m_trans[3][2]);
  }
 
+void OBBox :: move(const glm::mat4 &matrix)
+ { m_trans *= matrix;
+   m_pos = glm::vec3(m_trans[3][0], m_trans[3][1], m_trans[3][2]);
+ }
+
 bool OBBox :: contains(const glm::vec3 &p) const
  { glm::vec3 pt = glm::vec3(m_trans * glm::vec4(p.x, p.y, p.z, 1.f));
    AABBox box(m_pos, m_scale);
@@ -141,8 +146,8 @@ bool OBBox :: contains(const glm::vec3 &p) const
 int OBBox :: classify(const Plane& plane) const
  { int n = 0;
    glm::vec3  tmp[8];
-   glm::vec3 min = m_pos - m_scale;
-   glm::vec3 max = m_pos + m_scale;
+   glm::vec3 min = - m_scale;
+   glm::vec3 max = m_scale;
 
    tmp[0] = glm::vec3(m_trans * glm::vec4(min.x, min.y, min.z, 1.f));
    tmp[1] = glm::vec3(m_trans * glm::vec4(min.x, min.y, max.z, 1.f));
@@ -164,8 +169,8 @@ int OBBox :: classify(const Plane& plane) const
 
 bool OBBox :: intersects(const Frustrum& frustrum) const
  { glm::vec3  tmp[8];
-   glm::vec3 min = m_pos - m_scale;
-   glm::vec3 max = m_pos + m_scale;
+   glm::vec3 min = - m_scale;
+   glm::vec3 max = m_scale;
 
    tmp[0] = glm::vec3(m_trans * glm::vec4(min.x, min.y, min.z, 1.f));
    tmp[1] = glm::vec3(m_trans * glm::vec4(min.x, min.y, max.z, 1.f));
