@@ -9,8 +9,17 @@ META_METHODS(Shape)
 META_PROPERTY(Shape)
 META_OBJECT(Shape, Shape, &Object::Instance)
 
-Shape :: Shape(const char* Name) : Object(Name)
- { m_material = nullptr;
+Shape :: Shape() : Object()
+ { id = Object::genID();
+   m_visible = true;
+   m_material = nullptr;
+   m_mesh = nullptr;
+   metaClass = &Instance;
+ }
+
+Shape :: Shape(const char* Name) : Object(Name, Object::genID())
+ { m_visible = true;
+   m_material = nullptr;
    m_mesh = nullptr;
    metaClass = &Instance;
  }
@@ -23,12 +32,14 @@ Shape :: ~Shape()
 bool Shape :: init()
  { if(m_material != nullptr) m_material->init();
    if(m_mesh != nullptr) m_mesh->init();
+  // m_visible = true;
    return true;
  }
 
 void Shape :: clear()
  { if(m_material != nullptr) m_material->clear();
    if(m_mesh != nullptr) m_mesh->clear();
+   m_visible = false;
  }
 
 void Shape :: update()
@@ -41,11 +52,15 @@ void Shape :: setMaterial(Material* mat)
  }
 
 void Shape :: setMesh(Mesh* mesh)
- { glm::vec3 vmin, vmax, offset;
+ { glm::vec3 vmin, vmax, tmp;
 
    if(m_mesh != nullptr) m_mesh->release();
 
    m_mesh = mesh;
+   m_mesh->getDimensions(vmin, vmax);
+   tmp = glm::abs((vmax - vmin) * 0.5f);
+   bounding.setScale(tmp);
+   bounding.setPos(vmin + tmp);
  }
 
 void Shape :: setPos(const glm::vec3 &pos)
@@ -56,19 +71,21 @@ void Shape :: setPos(const glm::vec3 &pos)
 
 int Shape :: isVisible(Generic** head, MemoryPool<Generic> &pool,
                        Frustrum &frustrum, glm::mat4 &trans)
- { OBBox box(m_mesh->bounding);
-   glm::mat4 tmp = trans * m_trans;
+ { if(m_visible)
+    { OBBox box(bounding);
+      glm::mat4 tmp = m_trans * trans;
 
-   box.move(tmp);
-   if(box.intersects(frustrum))
-    { Generic* show = pool.allocate();
-      show->transform = tmp;
-      show->next = *head;
-      show->mesh = m_mesh;
-      show->mat = m_material;
-      show->id = getId();
-      *head = show;
-      return 1;
+      box.move(tmp);
+      if(box.intersects(frustrum))
+       { Generic* show = pool.allocate();
+         show->transform = tmp;
+         show->next = *head;
+         show->mesh = m_mesh;
+         show->mat = m_material;
+         show->id = getId();
+         *head = show;
+         return 1;
+       }
     }
    return 0;
  }

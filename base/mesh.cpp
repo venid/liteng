@@ -24,6 +24,8 @@ Mesh :: Mesh() : Object()
    aBuffer = 0;
    szVert = 0;
    szFace = 0;
+   numComp = 0;
+   typeGL = 0;
    actual = VERT_MESH | FACE_MESH;
    metaClass = &Instance;
  }
@@ -39,6 +41,8 @@ Mesh :: Mesh(const char *theName) : Object(theName)
    aBuffer = 0;
    szVert = 0;
    szFace = 0;
+   numComp = 0;
+   typeGL = 0;
    actual = VERT_MESH | FACE_MESH;
    metaClass = &Instance;
  }
@@ -63,7 +67,7 @@ bool Mesh :: init()
       if(face != nullptr)
        { glGenBuffers(1, &iBuffer);
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBuffer);
-         glBufferData(GL_ELEMENT_ARRAY_BUFFER, numF * 3 * sizeof(int), face, GL_STATIC_DRAW);
+         glBufferData(GL_ELEMENT_ARRAY_BUFFER, numF * numComp * sizeof(int), face, GL_STATIC_DRAW);
        }
       unlock();
       // create data VAO
@@ -103,8 +107,8 @@ bool Mesh :: update()
    if((actual & FACE_MESH) == FACE_MESH)
     { szFace = numF;
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBuffer);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, szFace * 3 * sizeof(int), nullptr, GL_STATIC_DRAW);
-      glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, szFace * 3 * sizeof(int), face);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, szFace * numComp * sizeof(int), nullptr, GL_STATIC_DRAW);
+      glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, szFace * numComp * sizeof(int), face);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
       actual ^= FACE_MESH;
       result = true;
@@ -128,25 +132,35 @@ void Mesh :: render()
 
    glBindVertexArray(aBuffer);
    glBindVertexBuffer(bId, vBuffer, 0, sizeof(Vertex));
-   if(face == nullptr) glDrawArrays(GL_TRIANGLES, 0, szVert);
+   if(face == nullptr) glDrawArrays(typeGL, 0, szVert);
    else
     { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBuffer);
-      glDrawElements(GL_TRIANGLES, szFace * 3, GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_TRIANGLES, szFace * numComp, GL_UNSIGNED_INT, 0);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
  }
 
-void Mesh :: setVertex(Vertex *vertex, unsigned int sz)
- { glm::vec3 vmin, vmax, tmp;
-
-   if(vert) delete [] vert;
+void Mesh :: setVertex(Vertex *vertex, unsigned int sz, unsigned int type)
+ { if(vert) delete [] vert;
    numV = sz;
    vert = vertex;
+   typeGL = type;
+   actual |= VERT_MESH;
+ }
 
-   vmin = vert[0].pos;
+void Mesh :: setFace(Face *faces, unsigned int sz, unsigned char num)
+ { if(face) delete [] face;
+   numF = sz;
+   face = faces;
+   numComp = num;
+   actual |= FACE_MESH;
+ }
+
+void Mesh :: getDimensions(glm::vec3 &vmin, glm::vec3 &vmax)
+ { vmin = vert[0].pos;
    vmax = vert[0].pos;
 
-   for(unsigned int i = 0; i < numV; i++)
+   for(unsigned int i = 1; i < numV; i++)
     { if(vert[i].pos.x > vmax.x) vmax.x = vert[i].pos.x;
       else if(vert[i].pos.x < vmin.x) vmin.x = vert[i].pos.x;
 
@@ -156,19 +170,6 @@ void Mesh :: setVertex(Vertex *vertex, unsigned int sz)
       if(vert[i].pos.z > vmax.z) vmax.z = vert[i].pos.z;
       else if(vert[i].pos.z < vmin.z) vmin.z = vert[i].pos.z;
     }
-   tmp = (vmax - vmin) * 0.5f;
-   bounding.setScale(tmp);
-   bounding.setPos(vmin + tmp);
-
-   actual |= VERT_MESH;
-
- }
-
-void Mesh :: setFace(Face *faces, unsigned int sz)
- { if(face) delete [] face;
-   numF = sz;
-   face = faces;
-   actual |= FACE_MESH;
  }
 
 void Mesh :: computeNormals()

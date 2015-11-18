@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include "vertex.h"
 #include "MemoryPool.h"
+#include "bounding.h"
 
 
 class Frustrum;
@@ -13,12 +14,15 @@ class Mesh;
 
 class Shape : public Object
  { private:
+    bool m_visible;
     Mesh* m_mesh;
     Material* m_material;
+    AABBox bounding;
 
     glm::mat4 m_trans;
 
    public:
+    Shape();
     Shape(const char* Name);
     ~Shape();
 
@@ -28,6 +32,7 @@ class Shape : public Object
 
     void setMaterial(Material* mat);
     void setMesh(Mesh* mesh);
+    void setVisible(bool param) { m_visible = param; }
 
     void setPos(const glm::vec3 &pos);
 

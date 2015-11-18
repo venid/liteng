@@ -3,7 +3,6 @@
 
 #include "object.h"
 #include "vertex.h"
-#include "bounding.h"
 #include <glm/glm.hpp>
 
 #define LN_MESH 1
@@ -28,11 +27,12 @@ class Mesh : public Object
     unsigned int szVert;
     unsigned int szFace;
 
+    unsigned char numComp;
+    unsigned int  typeGL;
+
     unsigned char actual;
 
    public:
-    AABBox bounding;
-
     Mesh();
     Mesh(const char *theName);
     ~Mesh();
@@ -43,8 +43,12 @@ class Mesh : public Object
 
     void render();
 
-    void setVertex(Vertex *vertex, unsigned int sz);
-    void setFace(Face *faces, unsigned int sz);
+    void setVertex(Vertex *vertex, unsigned int sz,
+                   unsigned int type = GL_TRIANGLES);
+    void setFace(Face *faces, unsigned int sz,
+                 unsigned char num = 3);
+
+    void getDimensions(glm::vec3 &vmin, glm::vec3 &vmax);
 
     void computeNormals();
 
