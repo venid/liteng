@@ -22,6 +22,7 @@ class Module : public Object
     unsigned int* tabMessages;
 
     std::multimap<unsigned int, Component*> components;
+    std::vector<Component*> staticComponents;
 
     struct Link
      { int refCount;

@@ -58,6 +58,12 @@ void Module :: addComp(Unit* un)
          components.emplace(it->getPoint(), it);
          LOG_DEBUG("%s: Add component id %i", getName(), it->getId());
        }
+      else
+       { it->init();
+         it->retain();
+         staticComponents.push_back(it);
+         LOG_DEBUG("%s: Add static component id %i", getName(), it->getId());
+       }
     }
  }
 
@@ -77,13 +83,26 @@ void Module :: delComp()
       it.second->release();
     }
    components.clear();
+
+   for(auto &it : staticComponents)
+    { i = 0;
+      while(it->public_var[i])
+       { vr = pool.find(it->public_var[i]);
+         if(vr != pool.end())
+          vr->second.refCount --;
+         i++;
+       }
+      it->clear();
+      it->release();
+    }
+   staticComponents.clear();
  }
 
 void Module :: delComp(unsigned int uID)
  { int i;
    std::map<int, Link>::iterator vr;
 
-   for(std::multimap<unsigned int, Component*>::iterator it = components.begin(); it != components.end();)
+   for(auto it = components.begin(); it != components.end();)
     { if( it->second->getUnitId() == uID )
        { i = 0;
          while(it->second->public_var[i])
@@ -96,6 +115,23 @@ void Module :: delComp(unsigned int uID)
          it->second->release();
 
          it = components.erase(it);
+       }
+      else ++it;
+    }
+
+   for(auto it = staticComponents.begin(); it != staticComponents.end();)
+    { if( (*it)->getUnitId() == uID )
+       { i = 0;
+         while((*it)->public_var[i])
+          { vr = pool.find((*it)->public_var[i]);
+            if(vr != pool.end())
+             vr->second.refCount --;
+            i++;
+          }
+         (*it)->clear();
+         (*it)->release();
+
+         it = staticComponents.erase(it);
        }
       else ++it;
     }
