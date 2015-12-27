@@ -23,7 +23,7 @@ inline float gaussian( float x, float stdDev )
 
 
 #define SAMPLE_SIZE 512
-        
+
 class Perlin
  { private:
     int   m_octaves;
@@ -37,7 +37,7 @@ class Perlin
 
     void init(int seed);
 
-    float noise(float &);
+    float noise(float);
     float noise(glm::vec2 &);
     float noise(glm::vec3 &);
 
@@ -45,14 +45,14 @@ class Perlin
     float frac_noise(Type &arg)
      { float result = 0.f;
        float amp = m_amplitude;
-       Type vec = arg * m_frequency; 
-       
-	      for(int i = 0; i < m_octaves; i++)
-	       { result += noise(vec) * amp;
-		        vec *= 2.0f;
-		        amp *= 0.5f;
+       Type vec = arg * m_frequency;
+
+       for(int i = 0; i < m_octaves; i++)
+        { result += noise(vec) * amp;
+          vec *= 2.0f;
+          amp *= 0.5f;
         }
-	      return result;
+       return result;
      }
 
    public:
@@ -77,22 +77,22 @@ class Perlin
     inline float getClean(glm::vec2& v)
      { return noise(v); }
     inline float getClean(glm::vec3& v)
-     { return noise(v); } 
+     { return noise(v); }
  };
 
-// ----------------------------------------------- 
+// -----------------------------------------------
 
-float cell( float x );
-float cell( glm::vec2& x );
-float cell( glm::vec3& x );
+//float cell( float x );
+//float cell( glm::vec2& x );
+//float cell( glm::vec3& x );
 
-void  cellN( const glm::vec2& x, int n, float* values );
-void  cellN( const glm::vec3& x, int n, float* values );
+//void  cellN( const glm::vec2& x, int n, float* values );
+//void  cellN( const glm::vec3& x, int n, float* values );
 
-glm::vec2 cell2( float x );
-glm::vec2 cell2( glm::vec2& x );
+//glm::vec2 cell2( float x );
+//glm::vec2 cell2( glm::vec2& x );
 
-glm::vec3 cell3( float x );
-glm::vec3 cell3( glm::vec3& x );
+//glm::vec3 cell3( float x );
+//glm::vec3 cell3( glm::vec3& x );
 
 }
