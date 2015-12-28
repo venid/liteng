@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/normal.hpp>
 #include <glm/gtc/constants.hpp>
+#include "ray.h"
 
 class Plane
  { public:
@@ -99,11 +100,11 @@ class Plane
        return dst;
      }
 
-    bool intersect_ray ( const glm::vec3& org, const glm::vec3& dir, float& t ) const
-     { float   numer = - (dist + glm::dot(org, n));
-       float   denom = glm::dot(dir, n);
-       if ( glm::abs(denom) < glm::epsilon<float>()) return false;
-       t = numer / denom;
-       return true;
+   float intersects(const Ray &ray) const
+     { float numer = - (dist + glm::dot(ray.getOrigin(), n));
+       float denom = glm::dot(ray.getDir(), n);
+       if ( glm::abs(denom) < glm::epsilon<float>()) return 0.f;
+       float t = numer / denom;
+       return t > 0.f ? t : -1.f;
      }
  };

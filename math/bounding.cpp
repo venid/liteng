@@ -56,6 +56,45 @@ int AABBox :: classify(const Plane& plane) const
    return 0;
  }
 
+float AABBox :: intersects(const Ray& ray) const
+ { glm::vec3 pos = ray.getOrigin();
+   glm::vec3 dir = ray.getDir();
+
+   if( fabs(dir.x) <= glm::epsilon<float>() &&
+       fabs(dir.y) <= glm::epsilon<float>() &&
+       fabs(dir.z) <= glm::epsilon<float>() )
+    return -1.f;
+
+   //Проверим если луч находится внутри параллелепипеда.
+   if (pos.x >= m_min.x &&
+       pos.x <= m_max.x &&
+       pos.y >= m_min.y &&
+       pos.y <= m_max.y &&
+       pos.z >= m_min.z &&
+       pos.z <= m_max.z)
+    return 0.f;
+
+   glm::vec3 tMin = (m_min - pos) / dir;
+   glm::vec3 tMax = (m_max - pos) / dir;
+
+   float minX = glm::min(tMin.x, tMax.x);
+   float minY = glm::min(tMin.y, tMax.y);
+   float minZ = glm::min(tMin.z, tMax.z);
+
+   float maxX = glm::max(tMin.x, tMax.x);
+   float maxY = glm::max(tMin.y, tMax.y);
+   float maxZ = glm::max(tMin.z, tMax.z);
+
+   float near = glm::max(minX, glm::max(minY, minZ));
+   float far  = glm::min(maxX, glm::min(maxY, maxZ));
+
+   if (near > far) return -1;
+   if (far < 0.0f) return -1;
+
+   if (near > 0.0f) return near;
+   return far;
+ }
+
 bool AABBox :: intersects(const BSphere& sph) const
  { float d = 0, a;
    float rad = sph.getRadius();
@@ -315,6 +354,27 @@ int BSphere :: classify(const Plane& plane) const
    if(m_rad > fabs(dist)) return 0;
    if(dist < 0.f) return -1;
    return 1;
+ }
+
+float BSphere :: intersects(const Ray& ray) const
+ { glm::vec3 k = ray.getOrigin() - m_pos;
+   float b = glm::dot(k, ray.getDir());
+   float c = glm::dot(k, k) - m_rad * m_rad;
+   float d = b*b - c;
+
+   if(d >= 0.f)
+    { float sqrtfd = sqrtf(d);
+      float t1 = -b + sqrtfd;
+      float t2 = -b - sqrtfd;
+
+      float min_t  = glm::min(t1,t2);
+      float max_t = glm::max(t1,t2);
+
+      if(min_t >= 0 ) return min_t;
+      else if(max_t >= 0) return 0.f;
+           else return -1.f;
+    }
+   return -1.f;
  }
 
 bool BSphere :: intersects(const BSphere& bs) const

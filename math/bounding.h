@@ -7,11 +7,12 @@ class Plane;
 class Frustrum;
 class OBBox;
 class BSphere;
+class Ray;
 
 class AABBox
  { private:
     glm::vec3 m_pos;
-    glm::vec3 m_scale;
+    glm::vec3 m_scale; //половина полного размера бокса
     glm::vec3 m_min;
     glm::vec3 m_max;
    public:
@@ -33,6 +34,8 @@ class AABBox
 
     int classify(const Plane& plane) const;
 
+    float intersects(const Ray& ray) const;
+
     bool intersects(const BSphere& sph) const;
     bool intersects(const AABBox& box) const;
     bool intersects(const OBBox& box) const;
@@ -45,7 +48,7 @@ class AABBox
 
 class OBBox
  { private:
-    glm::vec3 m_scale;
+    glm::vec3 m_scale; //половина полного размера бокса
     glm::vec3 m_pos;
     glm::mat4 m_trans;
    public:
@@ -66,6 +69,8 @@ class OBBox
     bool contains(const glm::vec3 &p) const;
 
     int classify(const Plane& plane) const;
+
+    float intersects(const Ray& ray) const;
 
     bool intersects(const Frustrum& frustrum) const;
     bool intersects(const BSphere& sph) const;
@@ -97,6 +102,8 @@ class BSphere
      }
 
     int classify(const Plane& plane) const;
+
+    float intersects(const Ray& ray) const;
 
     bool intersects(const BSphere& bs) const;
     bool intersects(const AABBox& box) const;
