@@ -60,15 +60,7 @@ clean:
 check:
 	cppcheck -j4 -q --enable=performance,warning,style $(VPATH)/ 2> err.txt
 
-#patch:
-#	lua .version util/version.h 2
-#	git commit -a
-
 deploy:
 	mkdir bin
 	mkdir bin/release bin/debug
-#$(VPATH)
-#	git init
-#	git add Makefile
-#	git commit -m "first commit"
 

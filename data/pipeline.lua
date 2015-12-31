@@ -17,7 +17,7 @@ do
     { comp = "Render::Clear", module = "View", point = 1 },
     { comp = "Render::ListDraw", module = "View", point = 3 },
     { comp = "Render::MaterialDraw", module = "View", point = 6, program = Load("pass3.sh") },
-    { comp = "Render::EnvDraw", module = "View", point = 7 },
+    { comp = "Render::EnvDraw", module = "View", point = 7, program = Load("env.sh") },
     { comp = "Render::IntDraw", module = "View", point = 8 }
   }
  tmp = Unit(param);

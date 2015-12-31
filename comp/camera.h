@@ -46,6 +46,8 @@ class Render : public Component
     void doUpdate();
 
     Frustrum& getFrustrum() { return m_frustrum; }
+    glm::mat4& getProject() { return m_proj; }
+    glm::mat4& getView() { return m_view; }
     glm::mat4& getPVMat() { return m_pvMatrix; }
     glm::mat4& getOrthoMat() { return m_ortho; }
 
