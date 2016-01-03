@@ -12,7 +12,8 @@ Factory =
     { "data/",
       "data/shaders/",
       "data/materials/",
-      "data/mesh/"
+      "data/mesh/",
+      "data/image/"
     },
    storage =
     { "data/event.zip" },

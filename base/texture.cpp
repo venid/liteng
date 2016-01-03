@@ -2,8 +2,8 @@
 #include "texture.h"
 #include <GL/gl.h>
 #include "GL/glext.h"
-#include "data.h"
 #include "log.h"
+#include "image.h"
 
 META_METHODS(Texture)
 META_PROPERTY(Texture)
@@ -13,11 +13,12 @@ Texture :: Texture(const char* theName) : Object(theName)
  { m_target = 0;
    m_gl = 0;
    m_init = 0;
+   image = nullptr;
    metaClass = &Instance;
  }
 
 Texture :: ~Texture()
- { }
+ { if(image) delete image; }
 
 bool Texture :: init()
  { if(m_init == 0)

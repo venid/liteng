@@ -16,6 +16,7 @@
 #include "pdecoder.h"
 #include "matdecoder.h"
 #include "meshdecoder.h"
+#include "imagedecoder.h"
 
 META_METHODS(Factory,
  METHOD(create, Factory::Create))
@@ -112,7 +113,7 @@ bool Factory :: init(Lua::State &lua)
    resManager->registerDecoder(new ProgramDecoder(resManager, "sh"));
    resManager->registerDecoder(new MaterialDecoder(resManager, "mat"));
    resManager->registerDecoder(new MeshDecoder(resManager, "ms"));
-   //resManager->registerDecoder(new ImageDecoder(resManager, "png"));
+   resManager->registerDecoder(new ImageDecoder(resManager, "png"));
 
    LOG_INFO("%s: first init.", getName());
    return true;
@@ -201,7 +202,7 @@ int Factory :: res_load_script(luavm vm)
       if(data)
        { obj = new Object(str.c_str());
          obj->stash = data;
-         int n = Manager::sendMessage(MSG_ADD_SCRIPT, obj, 0);
+         Manager::sendMessage(MSG_ADD_SCRIPT, obj, 0);
        }
     }
    return 0;

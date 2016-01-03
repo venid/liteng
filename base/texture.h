@@ -4,6 +4,7 @@
 #include "object.h"
 
 class Data;
+class Image;
 
 class Texture : public Object
  { private:
@@ -11,12 +12,16 @@ class Texture : public Object
     unsigned int m_gl;
     unsigned int m_init;
 
+    Image* image;
+
    public:
     Texture(const char *theName);
     ~Texture ();
 
     bool init();
     void clear();
+
+    bool isInit() { return m_init; }
 
     unsigned int getTarget() const { return m_target; }
     unsigned int getGL() const { return m_gl; }

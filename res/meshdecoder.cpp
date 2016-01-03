@@ -26,7 +26,7 @@ Object* MeshDecoder :: decode(const std::string &theName)
     { mesh = vr;
       if(mesh->isClass(Mesh::Instance))
        { mesh->setName(theName.c_str());
-         LOG_INFO("MeshDecoder: Load material \"%s\" complet.", theName.c_str());
+         LOG_INFO("MeshDecoder: Load mesh \"%s\" complet.", theName.c_str());
          delete dat;
          return mesh;
        }

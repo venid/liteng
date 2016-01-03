@@ -72,10 +72,9 @@ void Material :: setShininess(float shin)
 
 void Material :: setMap(int no, Texture *tx)
  { if(map[no] != nullptr)
-    { map[no]->clear();
-      map[no]->release();
-    }
-   map[no] = (Texture*)tx->retain();
+    map[no]->release();
+
+   map[no] = tx;
    flags |= flag_map[no];
  }
 
