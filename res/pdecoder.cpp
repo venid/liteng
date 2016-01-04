@@ -15,7 +15,7 @@ Object* ProgramDecoder :: decode(const std::string &theName)
    str = tmp + ".fsh";
    fdt = resMgr->getResource(str);
    if(vdt && fdt)
-    { shader = new Shader(tmp.c_str());
+    { shader = new Shader(theName.c_str());
       shader->vsh = vdt;
       shader->fsh = fdt;
       LOG_INFO("ProgramDecoder: Load shader \"%s\" complet.", tmp.c_str());

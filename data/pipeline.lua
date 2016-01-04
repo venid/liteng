@@ -16,7 +16,7 @@ do
   { name = "render_pipeline",
     { comp = "Render::Clear", module = "View", point = 1 },
     { comp = "Render::ListDraw", module = "View", point = 3 },
-    { comp = "Render::MaterialDraw", module = "View", point = 6, program = Load("pass3.sh") },
+    { comp = "Render::MaterialDraw", module = "View", point = 6 },
     { comp = "Render::EnvDraw", module = "View", point = 7, program = Load("env.sh") },
     { comp = "Render::IntDraw", module = "View", point = 8 }
   }

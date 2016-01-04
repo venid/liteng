@@ -99,15 +99,7 @@ void ListDraw :: doUpdate()
 // ---------------------------------------------------------------------
 
 MaterialDraw :: MaterialDraw(Lua::Var& tab, unsigned int pt) : Component(pt)
- { Object *obj = tab["program"];
-
-   if(obj) m_shader = (Shader*)obj;
-   else
-    { m_shader = nullptr;
-      LOG_WARNING("Render::MaterialDraw: Not detected shader program.");
-    }
-
-   public_var = MaterialDraw::public_tab;
+ { public_var = MaterialDraw::public_tab;
    privat_var = MaterialDraw::privat_tab;
    m_update = (CUpdate)&MaterialDraw::doUpdate;
    m_id = 0;
@@ -115,7 +107,7 @@ MaterialDraw :: MaterialDraw(Lua::Var& tab, unsigned int pt) : Component(pt)
  }
 
 MaterialDraw :: ~MaterialDraw()
- { if(m_shader) m_shader->release(); }
+ { }
 
 void MaterialDraw :: linkVar(int def, void* data)
  { switch(def)
@@ -132,22 +124,22 @@ void MaterialDraw :: linkVar(int def, void* data)
  }
 
 bool MaterialDraw :: init()
- { if(m_shader) m_shader->init();
-   return true;
- }
+ { return true; }
 
 void MaterialDraw :: clear()
- { if(m_shader) m_shader->clear(); }
+ { }
 
 void MaterialDraw :: doUpdate()
  { Generic* tmp = *mp_show;
+   Shader* shd;
 
-   m_shader->bind();
-   m_shader->setUniformMat("transform.PVM", (*mpp_camera)->getPVMat());
    while(tmp != nullptr)
-    { m_shader->setUniformMat("transform.model", tmp->transform);
-      tmp->mat->bind(m_shader);
-      tmp->mesh->render();
+    { shd = tmp->mat->bind();
+      if(shd)
+       { shd->setUniformMat("transform.PVM", (*mpp_camera)->getPVMat());
+         shd->setUniformMat("transform.model", tmp->transform);
+         tmp->mesh->render();
+       }
       tmp = tmp->next;
     }
  }

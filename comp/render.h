@@ -62,7 +62,6 @@ class ListDraw : public Component
 
 class MaterialDraw : public Component
  { private:
-    Shader *m_shader;
     Camera::Render** mpp_camera;
 
     Generic **mp_show;

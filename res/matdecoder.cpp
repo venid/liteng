@@ -6,6 +6,7 @@
 #include "resmanager.h"
 #include "material.h"
 #include "texture.h"
+#include "shader.h"
 #include <glm/glm.hpp>
 
 MaterialDecoder :: MaterialDecoder(ResManager *theManager, const char* ext) : ResDecoder(theManager, ext)
@@ -101,6 +102,12 @@ int MaterialDecoder :: buildMat(luavm vm)
    if(tab == Lua::LDATA)
     { text = tab;
       mat->setMap(3, (Texture*)text);
+    }
+
+   tab = vr["program"];
+   if(tab == Lua::LDATA)
+    { text = tab;
+      mat->setShader((Shader*)text);
     }
 
    lua.ret((Object*)mat);

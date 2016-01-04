@@ -34,6 +34,7 @@ Material :: Material(const char* theName) : Object(theName),
                                             emission(0.f, 0.f, 0.f, 1.f),
                                             shininess(0.f)
  { flags = 0;
+   m_shader = nullptr;
    for(int i = 0; i < MAP_MAX; i++)
     map[i] = nullptr;
 
@@ -41,7 +42,9 @@ Material :: Material(const char* theName) : Object(theName),
  }
 
 Material:: ~Material()
- { for(int i = 0; i < MAP_MAX; i++)
+ { if(m_shader) m_shader->release();
+
+   for(int i = 0; i < MAP_MAX; i++)
     if(map[i] != nullptr) map[i]->release();
  }
 
@@ -78,50 +81,65 @@ void Material :: setMap(int no, Texture *tx)
    flags |= flag_map[no];
  }
 
+void Material :: setShader(Shader* shd)
+ { if(m_shader) m_shader->release();
+   m_shader = shd;
+ }
+
 
 bool Material :: init()
- { for(int i = 0; i < MAP_MAX; i++)
+ { if(m_shader) m_shader->init();
+
+   for(int i = 0; i < MAP_MAX; i++)
     if(map[i] != nullptr) map[i]->init();
 
    return true;
  }
 
 void Material :: clear()
- { for(int i = 0; i < MAP_MAX; i++)
+ { if(m_shader) m_shader->clear();
+
+   for(int i = 0; i < MAP_MAX; i++)
     if(map[i] != nullptr) map[i]->clear();
    flags = 0;
  }
 
-void Material :: bind(Shader* shd)
- { if((flags & MAT_MAP_1) == MAT_MAP_1)
-    { glActiveTexture(GL_TEXTURE0);
-      glBindTexture(map[0]->getTarget(), map[0]->getGL());
-      shd->setTexture("material.map1", 0);
-    }
-   if((flags & MAT_MAP_2) == MAT_MAP_2)
-    { glActiveTexture(GL_TEXTURE1);
-      glBindTexture(map[1]->getTarget(), map[1]->getGL());
-      shd->setTexture("material.map2", 1);
-    }
-   if((flags & MAT_MAP_3) == MAT_MAP_3)
-    { glActiveTexture(GL_TEXTURE2);
-      glBindTexture(map[2]->getTarget(), map[2]->getGL());
-      shd->setTexture("material.map3", 2);
-    }
-   if((flags & MAT_MAP_4) == MAT_MAP_4)
-    { glActiveTexture(GL_TEXTURE3);
-      glBindTexture(map[3]->getTarget(), map[3]->getGL());
-      shd->setTexture("material.map4", 3);
+Shader* Material :: bind()
+ { if(m_shader)
+    { m_shader->bind();
+
+      if((flags & MAT_MAP_1) == MAT_MAP_1)
+       { glActiveTexture(GL_TEXTURE0);
+         glBindTexture(map[0]->getTarget(), map[0]->getGL());
+         m_shader->setTexture("material.map1", 0);
+       }
+      if((flags & MAT_MAP_2) == MAT_MAP_2)
+       { glActiveTexture(GL_TEXTURE1);
+         glBindTexture(map[1]->getTarget(), map[1]->getGL());
+         m_shader->setTexture("material.map2", 1);
+       }
+      if((flags & MAT_MAP_3) == MAT_MAP_3)
+       { glActiveTexture(GL_TEXTURE2);
+         glBindTexture(map[2]->getTarget(), map[2]->getGL());
+         m_shader->setTexture("material.map3", 2);
+       }
+      if((flags & MAT_MAP_4) == MAT_MAP_4)
+       { glActiveTexture(GL_TEXTURE3);
+         glBindTexture(map[3]->getTarget(), map[3]->getGL());
+         m_shader->setTexture("material.map4", 3);
+       }
+
+      if((flags & MAT_DIFFUSE) == MAT_DIFFUSE)
+       m_shader->setUniformVec("material.diffuse", diffuse);
+      if((flags & MAT_AMBIENT) == MAT_AMBIENT)
+       m_shader->setUniformVec("material.ambient", ambient);
+      if((flags &  MAT_SPECULAR) ==  MAT_SPECULAR)
+       m_shader->setUniformVec("material.specular", specular);
+      if((flags & MAT_EMISSION) == MAT_EMISSION)
+       m_shader->setUniformVec("material.emission", emission);
+      if((flags & MAT_SHININESS) == MAT_SHININESS)
+       m_shader->setUniform("material.shininess", shininess);
     }
 
-   if((flags & MAT_DIFFUSE) == MAT_DIFFUSE)
-    shd->setUniformVec("material.diffuse", diffuse);
-   if((flags & MAT_AMBIENT) == MAT_AMBIENT)
-    shd->setUniformVec("material.ambient", ambient);
-   if((flags &  MAT_SPECULAR) ==  MAT_SPECULAR)
-    shd->setUniformVec("material.specular", specular);
-   if((flags & MAT_EMISSION) == MAT_EMISSION)
-    shd->setUniformVec("material.emission", emission);
-   if((flags & MAT_SHININESS) == MAT_SHININESS)
-    shd->setUniform("material.shininess", shininess);
+   return m_shader;
  }

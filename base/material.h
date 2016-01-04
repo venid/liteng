@@ -21,6 +21,8 @@ class Material : public Object
 
     Texture *map[MAP_MAX];
 
+    Shader* m_shader;
+
    public:
     Material(const char* theName);
     ~Material();
@@ -33,9 +35,11 @@ class Material : public Object
 
     void setMap(int no, Texture *tx);
 
+    void setShader(Shader*);
+    
     bool init();
     void clear();
-    void bind(Shader*);
+    Shader* bind();
 
     static Meta::Base Instance;
  };
