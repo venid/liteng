@@ -4,13 +4,15 @@
 #include "texture.h"
 #include "data.h"
 #include "resmanager.h"
+#include "image.h"
 
 ImageDecoder :: ImageDecoder(ResManager *theManager, const char* ext) : ResDecoder(theManager, ext)
  { }
 
 Object* ImageDecoder :: decode(const std::string &theName)
- { Object *texture;
+ { Texture* texture;
    Data* dat = resMgr->getResource(theName);
+   Image* img;
 
    if(dat == nullptr)
     { LOG_WARNING("ImageDecoder: Not reading image file \"%s\".", theName.c_str());
@@ -19,7 +21,11 @@ Object* ImageDecoder :: decode(const std::string &theName)
 
    texture = new Texture(theName.c_str());
    if(texture)
-    { LOG_INFO("ImageDecoder: Load texture \"%s\" complet.", theName.c_str());
+    { img = new Image();
+      if(img && img->loadPNG(dat))
+       { texture->addImage(img);
+         LOG_INFO("ImageDecoder: Load texture \"%s\" complet.", theName.c_str());
+       }
       delete dat;
       return texture;
     }

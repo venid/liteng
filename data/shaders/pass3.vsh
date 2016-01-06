@@ -7,7 +7,6 @@ in vec2 in_coord;
 
 out vec3 norm;
 out vec3 ldir;
-out vec2 coord;
 
 // параметры преобразований
 uniform struct Transform
@@ -20,7 +19,6 @@ void main(void)
    ldir = normalize(vec3(-0.3, 0.5, -0.6));
    tmp = transform.model * vec4(in_norm, 0.0);
    norm = vec3(tmp.x, tmp.y, tmp.z); //in_norm;
-   coord = in_coord;
    vec4 vertex = transform.model * vec4(in_vert, 1.0);
    gl_Position = transform.PVM * vertex;
  }

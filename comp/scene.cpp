@@ -336,40 +336,40 @@ bool Build :: init()
    sgm = new Segment();
 
    shp = new Shape("tst-1");
-   shp->setMaterial((Material*)mp_res->getObject("mt02.mat"));
+   shp->setMaterial((Material*)mp_res->getObject("mt03.mat"));
    shp->setMesh((Mesh*)mp_res->getObject("box_01.ms"));
    shp->setPos(glm::vec3(0.f, 0.f, 0.f));
    sgm->addShape(shp);
 
-   shp = new Shape("tst-2");
-   shp->setMaterial((Material*)mp_res->getObject("mt02.mat"));
-   shp->setMesh((Mesh*)mp_res->getObject("box_01.ms"));
-   shp->setPos(glm::vec3(0.f, 0.f, 0.1f));
-   sgm->addShape(shp);
+   //shp = new Shape("tst-2");
+   //shp->setMaterial((Material*)mp_res->getObject("mt02.mat"));
+   //shp->setMesh((Mesh*)mp_res->getObject("box_01.ms"));
+   //shp->setPos(glm::vec3(0.f, 0.f, 0.1f));
+   //sgm->addShape(shp);
 
-   shp = new Shape("tst-3");
-   shp->setMaterial((Material*)mp_res->getObject("mt02.mat"));
-   shp->setMesh((Mesh*)mp_res->getObject("box_01.ms"));
-   shp->setPos(glm::vec3(0.f, 0.f, 0.2f));
-   sgm->addShape(shp);
+   //shp = new Shape("tst-3");
+   //shp->setMaterial((Material*)mp_res->getObject("mt02.mat"));
+   //shp->setMesh((Mesh*)mp_res->getObject("box_01.ms"));
+   //shp->setPos(glm::vec3(0.f, 0.f, 0.2f));
+   //sgm->addShape(shp);
 
-   shp = new Shape("tst-4");
-   shp->setMaterial((Material*)mp_res->getObject("mt02.mat"));
-   shp->setMesh((Mesh*)mp_res->getObject("box_01.ms"));
-   shp->setPos(glm::vec3(0.f, 0.1f, 0.f));
-   sgm->addShape(shp);
+   //shp = new Shape("tst-4");
+   //shp->setMaterial((Material*)mp_res->getObject("mt02.mat"));
+   //shp->setMesh((Mesh*)mp_res->getObject("box_01.ms"));
+   //shp->setPos(glm::vec3(0.f, 0.1f, 0.f));
+   //sgm->addShape(shp);
 
-   shp = new Shape("tst-5");
-   shp->setMaterial((Material*)mp_res->getObject("mt02.mat"));
-   shp->setMesh((Mesh*)mp_res->getObject("box_01.ms"));
-   shp->setPos(glm::vec3(0.1f, 0.f, 0.f));
-   sgm->addShape(shp);
+   //shp = new Shape("tst-5");
+   //shp->setMaterial((Material*)mp_res->getObject("mt02.mat"));
+   //shp->setMesh((Mesh*)mp_res->getObject("box_01.ms"));
+   //shp->setPos(glm::vec3(0.1f, 0.f, 0.f));
+   //sgm->addShape(shp);
 
-   shp = new Shape("tst-6");
-   shp->setMaterial((Material*)mp_res->getObject("mt02.mat"));
-   shp->setMesh((Mesh*)mp_res->getObject("box_01.ms"));
-   shp->setPos(glm::vec3(-0.1f, 0.f, 0.f));
-   sgm->addShape(shp);
+   //shp = new Shape("tst-6");
+   //shp->setMaterial((Material*)mp_res->getObject("mt02.mat"));
+   //shp->setMesh((Mesh*)mp_res->getObject("box_01.ms"));
+   //shp->setPos(glm::vec3(-0.1f, 0.f, 0.f));
+   //sgm->addShape(shp);
 
    mp_segment->push_back(sgm);
 

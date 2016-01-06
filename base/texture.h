@@ -21,6 +21,8 @@ class Texture : public Object
     bool init();
     void clear();
 
+    void addImage(Image *img);
+
     bool isInit() { return m_init; }
 
     unsigned int getTarget() const { return m_target; }

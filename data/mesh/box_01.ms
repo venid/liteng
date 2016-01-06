@@ -1,2 +1,2 @@
 
-return build_box(0.1, 0.1, 0.1);
+return build_box(0.5, 0.5, 0.5);
