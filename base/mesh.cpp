@@ -4,10 +4,19 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <cmath>
+#include <vector>
 #include "glfun.h"
 #include "mesh.h"
 
 #include "log.h"
+
+// ---------------------------------------------------------------------------------------------
+glm::vec3 ClosestPointOnLine(const glm::vec3& a, const glm::vec3& b, const glm::vec3& p);
+glm::vec3 Ortogonalize(const glm::vec3& v1, const glm::vec3& v2);
+void CalcTriangleBasis( const glm::vec3& E, const glm::vec3& F, const glm::vec3& G,
+                        float sE, float tE, float sF, float tF, float sG, float tG,
+                        glm::vec3& tangentX, glm::vec3& tangentY);
+// ----------------------------------------------------------------------------------------------
 
 META_METHODS(Mesh)
 META_PROPERTY(Mesh)
@@ -206,6 +215,79 @@ void Mesh :: computeNormals()
     }
  }
 
+void Mesh :: computeTangents()
+ { if(face) tangentFace();
+   else tangentVertex();
+ }
+
+void Mesh :: tangentFace()
+ { register unsigned int i, j;
+   glm::vec3* tangents = new glm::vec3[numF];
+   glm::vec3* binormals = new glm::vec3[numF];
+
+   for (i = 0; i < numF; i++ )
+    { int ind0 = face[ i ].index[0];
+      int ind1 = face[ i ].index[1];
+      int ind2 = face[ i ].index[2];
+      float s1 = vert[ ind0 ].coord.x;
+      float t1 = vert[ ind0 ].coord.y;
+      float s2 = vert[ ind1 ].coord.x;
+      float t2 = vert[ ind1 ].coord.y;
+      float s3 = vert[ ind2 ].coord.x;
+      float t3 = vert[ ind2 ].coord.y;
+
+      glm::vec3  t, b;
+      CalcTriangleBasis( vert[face[i].index[0]].pos,
+                         vert[face[i].index[1]].pos,
+                         vert[face[i].index[2]].pos,
+                         s1, t1, s2, t2, s3, t3, t, b );
+      tangents[i] = t;
+      binormals[i] = b;
+    }
+
+   // теперь пройдемся по всем вершинам, для каждой из них найдем
+   // грани ее содержащие, и запишем все это хозяйство на будущее =)
+   std::vector<glm::vec3> rt, rb;
+   for ( i = 0; i < numV; i++ )
+    { for ( j = 0; j < numF; j++ )
+       if ( face[j].index[0] == i || face[j].index[1] == i || face[j].index[2] == i )
+        { // нашли грань которой эта вершина принадлежит.
+          // добавим вектора этой грани в наш массив
+          rt.push_back( tangents[ j ] );
+          rb.push_back( binormals[ j ] );
+        }
+
+      // все прилежащие вектора нашли, теперь просуммируем их
+      // и разделим на их количество, т.е. усредним.
+      glm::vec3 tangentRes(0.f, 0.f, 0.f);
+      glm::vec3 binormalRes(0.f, 0.f, 0.f);
+      for ( j = 0; j < rt.size(); j++ )
+       { tangentRes += rt[ j ];
+         binormalRes += rb[ j ];
+       }
+      tangentRes /= float( rt.size() );
+      binormalRes /= float( rb.size() );
+      rt.clear();
+      rb.clear();
+      // а теперь то, о чем многие забывают. Как мы помним,
+      // TBN базис представляет собой всего-навсего систему координат.
+      // поэтому все три направляющие вектора этого базиса
+      // обязаны быть попарно перпендикулярны. Вот об этом мы
+      // сейчас и побеспокоимся, выполнив ортогонализацию
+      // векторов методом Грама-Шмидта
+      vert[i].tangent = Ortogonalize(vert[i].norm, tangentRes);
+      vert[i].binormal = Ortogonalize(vert[i].norm, binormalRes);
+
+    }
+    delete [] tangents;
+    delete [] binormals;
+ }
+
+void Mesh :: tangentVertex()
+ {
+
+ }
+
 // ------------------------------------------------------------------------
 
 Mesh* Mesh :: makeBox(float x, float y, float z)
@@ -264,5 +346,63 @@ Mesh* Mesh :: makeBox(float x, float y, float z)
    fc[11].index[0] = 22; fc[11].index[1] = 23; fc[11].index[2] = 20;
    ms->setFace(fc, 12);
    ms->computeNormals();
+   ms->computeTangents();
    return ms;
+ }
+
+/// ----------------------------------------------------------------------------------------------
+
+glm::vec3 ClosestPointOnLine(const glm::vec3& a, const glm::vec3& b, const glm::vec3& p)
+ { glm::vec3 c = p - a;
+   glm::vec3 V = b - a;
+   float d = glm::length(V);
+
+   V = glm::normalize(V);
+   float t = glm::dot(V, c); // скалярное произведение векторов
+
+   // проверка на выход за границы отрезка
+   if ( t < 0.0f ) return a;
+   if ( t > d ) return b;
+
+   // Вернем точку между a и b
+   V *= t;
+   return ( a + V );
+ }
+
+glm::vec3 Ortogonalize( const glm::vec3& v1, const glm::vec3& v2 )
+ { glm::vec3 v2ProjV1 = ClosestPointOnLine( v1, -v1, v2 );
+   return glm::normalize(v2 - v2ProjV1);
+ }
+
+void CalcTriangleBasis( const glm::vec3& E, const glm::vec3& F, const glm::vec3& G,
+                        float sE, float tE, float sF, float tF, float sG, float tG,
+                        glm::vec3& tangentX, glm::vec3& tangentY)
+ { glm::vec3 P = F - E;
+   glm::vec3 Q = G - E;
+   float s1 = sF - sE;
+   float t1 = tF - tE;
+   float s2 = sG - sE;
+   float t2 = tG - tE;
+   float pqMatrix[2][3];
+   pqMatrix[0][0] = P[0];
+   pqMatrix[0][1] = P[1];
+   pqMatrix[0][2] = P[2];
+   pqMatrix[1][0] = Q[0];
+   pqMatrix[1][1] = Q[1];
+   pqMatrix[1][2] = Q[2];
+   float temp = 1.0f / ( s1 * t2 - s2 * t1);
+   float stMatrix[2][2];
+   stMatrix[0][0] =  t2 * temp;
+   stMatrix[0][1] = -t1 * temp;
+   stMatrix[1][0] = -s2 * temp;
+   stMatrix[1][1] =  s1 * temp;
+   float tbMatrix[2][3];
+   tbMatrix[0][0] = stMatrix[0][0] * pqMatrix[0][0] + stMatrix[0][1] * pqMatrix[1][0];
+   tbMatrix[0][1] = stMatrix[0][0] * pqMatrix[0][1] + stMatrix[0][1] * pqMatrix[1][1];
+   tbMatrix[0][2] = stMatrix[0][0] * pqMatrix[0][2] + stMatrix[0][1] * pqMatrix[1][2];
+   tbMatrix[1][0] = stMatrix[1][0] * pqMatrix[0][0] + stMatrix[1][1] * pqMatrix[1][0];
+   tbMatrix[1][1] = stMatrix[1][0] * pqMatrix[0][1] + stMatrix[1][1] * pqMatrix[1][1];
+   tbMatrix[1][2] = stMatrix[1][0] * pqMatrix[0][2] + stMatrix[1][1] * pqMatrix[1][2];
+   tangentX = glm::normalize(glm::vec3(tbMatrix[0][0], tbMatrix[0][1], tbMatrix[0][2]));
+   tangentY = glm::normalize(glm::vec3(tbMatrix[1][0], tbMatrix[1][1], tbMatrix[1][2]));
  }

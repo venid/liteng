@@ -27,7 +27,7 @@ bool Texture :: init()
       glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTexParameteri(m_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       if (image->is2D())
-       { glTexImage2D(m_target, 0, GL_RGBA, image->getWidth(), image->getHeight(),
+       { glTexImage2D(m_target, 0, 4, image->getWidth(), image->getHeight(),
                       0, GL_RGBA, GL_UNSIGNED_BYTE, image->getPixels());
          LOG_INFO("Texture: Registration texture \"%s\" complit.", getName());
        }

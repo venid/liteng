@@ -1,7 +1,9 @@
 do
  local mat = { diffuse = {0.9, 0.9, 0.9, 1.0},
-               --ambient  = {0.05, 0.2, 0.05, 1.0}
-               map1 = Load("tst.png"),
+               ambient  = {0.1, 0.1, 0.1, 1.0},
+               specular = {0.7, 1.0, 0.7, 1.0},
+               map1 = Load("hex.png"),
+               map2 = Load("hex_n.png"),
                program = Load("matrender.sh")
              }
  return build_material(mat);

@@ -48,6 +48,8 @@ int Shader :: init()
       glBindAttribLocation(program, 1, "in_norm");
       glBindAttribLocation(program, 2, "in_coord");
       glBindAttribLocation(program, 3, "in_color");
+      glBindAttribLocation(program, 4, "in_tangent");
+      glBindAttribLocation(program, 5, "in_binormal");
       glDeleteShader(shader);
 
       shader = glCreateShader(GL_FRAGMENT_SHADER);

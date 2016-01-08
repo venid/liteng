@@ -32,6 +32,9 @@ class Mesh : public Object
 
     unsigned char actual;
 
+    void tangentFace();
+    void tangentVertex();
+
    public:
     Mesh();
     Mesh(const char *theName);
@@ -51,6 +54,7 @@ class Mesh : public Object
     void getDimensions(glm::vec3 &vmin, glm::vec3 &vmax);
 
     void computeNormals();
+    void computeTangents();
 
     static Mesh* makeBox(float x, float y, float z);
 
