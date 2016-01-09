@@ -55,6 +55,7 @@ class Mesh : public Object
 
     void computeNormals();
     void computeTangents();
+    void computeTextureCoord(float scale = 1.f);
 
     static Mesh* makeBox(float x, float y, float z);
 

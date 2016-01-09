@@ -11,6 +11,8 @@
 #include "log.h"
 
 // ---------------------------------------------------------------------------------------------
+glm::mat3 textureCoordMatrix(glm::vec3& v1, glm::vec3& v2, glm::vec3& v3);
+
 glm::vec3 ClosestPointOnLine(const glm::vec3& a, const glm::vec3& b, const glm::vec3& p);
 glm::vec3 Ortogonalize(const glm::vec3& v1, const glm::vec3& v2);
 void CalcTriangleBasis( const glm::vec3& E, const glm::vec3& F, const glm::vec3& G,
@@ -220,6 +222,26 @@ void Mesh :: computeTangents()
    else tangentVertex();
  }
 
+void Mesh :: computeTextureCoord(float scale)
+ { unsigned int i = 0;
+   glm::vec3 vt;
+   glm::mat3 rot;
+
+   if(face == nullptr)
+    while(i < numV)
+     { rot = textureCoordMatrix(vert[i].pos, vert[i + 1].pos, vert[i + 2].pos);
+
+       vt = rot * vert[i].pos * scale;
+       vert[i].coord = glm::vec2(vt.x, vt.y);
+       vt = rot * vert[i + 1].pos * scale;
+       vert[i + 1].coord = glm::vec2(vt.x, vt.y);
+       vt = rot * vert[i + 2].pos * scale;
+       vert[i + 2].coord = glm::vec2(vt.x, vt.y);
+
+       i += 3;
+     }
+ }
+
 void Mesh :: tangentFace()
  { register unsigned int i, j;
    glm::vec3* tangents = new glm::vec3[numF];
@@ -288,43 +310,86 @@ void Mesh :: tangentVertex()
 
  }
 
-// ------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+glm::mat3 textureCoordMatrix(glm::vec3& v1, glm::vec3& v2, glm::vec3& v3)
+ { glm::vec3 rot_x, rot_y, rot_z; //Базисные вектора матрицы поворота.
+
+   rot_z = glm::triangleNormal(v1, v2, v3);
+   rot_x = glm::normalize(v2 - v1);
+   rot_y = glm::cross(rot_z, rot_x);
+   return glm::inverse(glm::mat3( rot_x, rot_y, rot_z ));
+ }
+
 
 Mesh* Mesh :: makeBox(float x, float y, float z)
  { Mesh* ms = new Mesh("");
    Vertex* vrt = new Vertex[24];
    Face* fc =  new Face[12];
    glm::vec3 hsz = glm::vec3(x*0.5f, y*0.5f, z*0.5f);
+   glm::vec3 tmp;
+   glm::mat3 txm;
 
-   vrt[0].pos = glm::vec3(-hsz.x, hsz.y, hsz.z);  vrt[0].coord = glm::vec2(0.f, 1.f);
-   vrt[1].pos = glm::vec3(hsz.x, hsz.y, hsz.z);   vrt[1].coord = glm::vec2(1.f, 1.f);
-   vrt[2].pos = glm::vec3(hsz.x, -hsz.y, hsz.z);  vrt[2].coord = glm::vec2(1.f, 0.f);
-   vrt[3].pos = glm::vec3(-hsz.x, -hsz.y, hsz.z); vrt[3].coord = glm::vec2(0.f, 0.f);
+   vrt[0].pos = glm::vec3(-hsz.x, hsz.y, hsz.z);
+   vrt[1].pos = glm::vec3(hsz.x, hsz.y, hsz.z);
+   vrt[2].pos = glm::vec3(hsz.x, -hsz.y, hsz.z);
+   vrt[3].pos = glm::vec3(-hsz.x, -hsz.y, hsz.z);
+   txm = textureCoordMatrix(vrt[0].pos, vrt[1].pos, vrt[2].pos);
+   tmp = txm * vrt[0].pos; vrt[0].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[1].pos; vrt[1].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[2].pos; vrt[2].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[3].pos; vrt[3].coord = glm::vec2(tmp.x, tmp.y);
 
-   vrt[4].pos = glm::vec3(-hsz.x, hsz.y, -hsz.z); vrt[4].coord = glm::vec2(0.f, 0.f);
-   vrt[5].pos = glm::vec3(hsz.x, hsz.y, -hsz.z);  vrt[5].coord = glm::vec2(1.f, 0.f);
-   vrt[6].pos = glm::vec3(hsz.x, -hsz.y, -hsz.z); vrt[6].coord = glm::vec2(1.f, 1.f);
-   vrt[7].pos = glm::vec3(-hsz.x, -hsz.y, -hsz.z); vrt[7].coord = glm::vec2(0.f, 1.f);
 
-   vrt[8].pos = glm::vec3(-hsz.x, hsz.y, -hsz.z); vrt[8].coord = glm::vec2(0.f, 0.f);
-   vrt[9].pos = glm::vec3(hsz.x, hsz.y, -hsz.z);  vrt[9].coord = glm::vec2(1.f, 0.f);
-   vrt[10].pos = glm::vec3(hsz.x, hsz.y, hsz.z);  vrt[10].coord = glm::vec2(1.f, 1.f);
-   vrt[11].pos = glm::vec3(-hsz.x, hsz.y, hsz.z); vrt[11].coord = glm::vec2(0.f, 1.f);
+   vrt[4].pos = glm::vec3(-hsz.x, hsz.y, -hsz.z);
+   vrt[5].pos = glm::vec3(hsz.x, hsz.y, -hsz.z);
+   vrt[6].pos = glm::vec3(hsz.x, -hsz.y, -hsz.z);
+   vrt[7].pos = glm::vec3(-hsz.x, -hsz.y, -hsz.z);
+   txm = textureCoordMatrix(vrt[4].pos, vrt[5].pos, vrt[6].pos);
+   tmp = txm * vrt[4].pos; vrt[4].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[5].pos; vrt[5].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[6].pos; vrt[6].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[7].pos; vrt[7].coord = glm::vec2(tmp.x, tmp.y);
 
-   vrt[12].pos = glm::vec3(-hsz.x, -hsz.y, -hsz.z); vrt[12].coord = glm::vec2(0.f, 0.f);
-   vrt[13].pos = glm::vec3(hsz.x, -hsz.y, -hsz.z);  vrt[13].coord = glm::vec2(1.f, 0.f);
-   vrt[14].pos = glm::vec3(hsz.x, -hsz.y, hsz.z);   vrt[14].coord = glm::vec2(1.f, 1.f);
-   vrt[15].pos = glm::vec3(-hsz.x, -hsz.y, hsz.z);  vrt[15].coord = glm::vec2(0.f, 1.f);
+   vrt[8].pos = glm::vec3(-hsz.x, hsz.y, -hsz.z);
+   vrt[9].pos = glm::vec3(hsz.x, hsz.y, -hsz.z);
+   vrt[10].pos = glm::vec3(hsz.x, hsz.y, hsz.z);
+   vrt[11].pos = glm::vec3(-hsz.x, hsz.y, hsz.z);
+   txm = textureCoordMatrix(vrt[8].pos, vrt[9].pos, vrt[10].pos);
+   tmp = txm * vrt[8].pos; vrt[8].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[9].pos; vrt[9].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[10].pos; vrt[10].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[11].pos; vrt[11].coord = glm::vec2(tmp.x, tmp.y);
 
-   vrt[16].pos = glm::vec3(hsz.x, -hsz.y, -hsz.z);  vrt[16].coord = glm::vec2(0.f, 0.f);
-   vrt[17].pos = glm::vec3(hsz.x, hsz.y, -hsz.z);   vrt[17].coord = glm::vec2(1.f, 0.f);
-   vrt[18].pos = glm::vec3(hsz.x, hsz.y, hsz.z);    vrt[18].coord = glm::vec2(1.f, 1.f);
-   vrt[19].pos = glm::vec3(hsz.x, -hsz.y, hsz.z);   vrt[19].coord = glm::vec2(0.f, 1.f);
+   vrt[12].pos = glm::vec3(-hsz.x, -hsz.y, -hsz.z);
+   vrt[13].pos = glm::vec3(hsz.x, -hsz.y, -hsz.z);
+   vrt[14].pos = glm::vec3(hsz.x, -hsz.y, hsz.z);
+   vrt[15].pos = glm::vec3(-hsz.x, -hsz.y, hsz.z);
+   txm = textureCoordMatrix(vrt[12].pos, vrt[13].pos, vrt[14].pos);
+   tmp = txm * vrt[12].pos; vrt[12].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[13].pos; vrt[13].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[14].pos; vrt[14].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[15].pos; vrt[15].coord = glm::vec2(tmp.x, tmp.y);
 
-   vrt[20].pos = glm::vec3(-hsz.x, -hsz.y, -hsz.z); vrt[20].coord = glm::vec2(0.f, 0.f);
-   vrt[21].pos = glm::vec3(-hsz.x, -hsz.y, hsz.z);  vrt[21].coord = glm::vec2(1.f, 0.f);
-   vrt[22].pos = glm::vec3(-hsz.x, hsz.y, hsz.z);   vrt[22].coord = glm::vec2(1.f, 1.f);
-   vrt[23].pos = glm::vec3(-hsz.x, hsz.y, -hsz.z);  vrt[23].coord = glm::vec2(0.f, 1.f);
+   vrt[16].pos = glm::vec3(hsz.x, -hsz.y, -hsz.z);
+   vrt[17].pos = glm::vec3(hsz.x, hsz.y, -hsz.z);
+   vrt[18].pos = glm::vec3(hsz.x, hsz.y, hsz.z);
+   vrt[19].pos = glm::vec3(hsz.x, -hsz.y, hsz.z);
+   txm = textureCoordMatrix(vrt[16].pos, vrt[17].pos, vrt[18].pos);
+   tmp = txm * vrt[16].pos; vrt[16].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[17].pos; vrt[17].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[18].pos; vrt[18].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[19].pos; vrt[19].coord = glm::vec2(tmp.x, tmp.y);
+
+   vrt[20].pos = glm::vec3(-hsz.x, -hsz.y, -hsz.z);
+   vrt[21].pos = glm::vec3(-hsz.x, -hsz.y, hsz.z);
+   vrt[22].pos = glm::vec3(-hsz.x, hsz.y, hsz.z);
+   vrt[23].pos = glm::vec3(-hsz.x, hsz.y, -hsz.z);
+   txm = textureCoordMatrix(vrt[20].pos, vrt[21].pos, vrt[22].pos);
+   tmp = txm * vrt[20].pos; vrt[20].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[21].pos; vrt[21].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[22].pos; vrt[22].coord = glm::vec2(tmp.x, tmp.y);
+   tmp = txm * vrt[23].pos; vrt[23].coord = glm::vec2(tmp.x, tmp.y);
    ms->setVertex(vrt, 24);
 
    fc[0].index[0] = 0; fc[0].index[1] = 3; fc[0].index[2] = 2;

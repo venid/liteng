@@ -374,9 +374,9 @@ bool Build :: init()
    mp_segment->push_back(sgm);
 
    glm::mat4 mt(1.f);
-   mt[3][0] = 1.f;
-   mt[3][1] = 0.f;
-   mt[3][2] = -2.f;
+  // mt[3][0] = 1.f;
+  // mt[3][1] = 0.f;
+  // mt[3][2] = -2.f;
    memcpy(mp_trans, &mt, sizeof(glm::mat4));
 
    return true;

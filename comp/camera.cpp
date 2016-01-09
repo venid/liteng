@@ -141,7 +141,7 @@ Translate :: Translate(unsigned int pt) : Component(pt)
 
    m_orientation = glm::quat(1.f, 0.f, 0.f, 0.f);
    m_pos = glm::vec3(0.f);
-   m_target = glm::vec3(0.f, 3.f, 0.f);
+   m_target = glm::vec3(0.f, 0.f, 0.f);
 
    privat_var = Translate::privat_tab;
    m_update = (CUpdate)&Translate::doUpdate;
