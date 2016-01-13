@@ -9,6 +9,7 @@
 #include "vertex.h"
 #include "MemoryPool.h"
 #include "typevar.h"
+#include "transform.h"
 
 namespace Lua { class Var; }
 
