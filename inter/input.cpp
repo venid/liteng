@@ -180,6 +180,9 @@ Mousedevice :: Mousedevice() : m_atf(ATOMIC_FLAG_INIT)
 
    m_posAbsolute = {0, 0};
    m_posRelative = {0.f, 0.f};
+
+   m_width = 0;
+   m_height = 0;
  }
 
 void Mousedevice :: setDisplay(Display *dpy)
@@ -189,8 +192,14 @@ void Mousedevice :: setDisplay(Display *dpy)
  }
 
 void Mousedevice :: setWindow(Window win)
- { while(m_atf.test_and_set()) {}
+ { Window root;
+   int x, y;
+   unsigned border_width, depth;
+
+   while(m_atf.test_and_set()) {}
    m_win = win;
+   if(m_win != 0)
+    XGetGeometry(m_dpy, m_win, &root, &x, &y, &m_width, &m_height, &border_width, &depth);
    m_atf.clear();
  }
 

@@ -50,6 +50,9 @@ class Mousedevice
     float m_wheel;
     float m_wheel_delta;
 
+    unsigned int m_width;
+    unsigned int m_height;
+
     struct
      { int x;
        int y;
@@ -76,13 +79,24 @@ class Mousedevice
      }
 
     void getPosRelative(float& x, float& y)
-     { x = m_posRelative.x;
+     { while(m_atf.test_and_set()) {}
+       x = m_posRelative.x;
        y = m_posRelative.y;
+       m_atf.clear();
      }
 
     void getPosAbsolute(int& x, int& y)
-     { x = m_posAbsolute.x;
+     { while(m_atf.test_and_set()) {}
+       x = m_posAbsolute.x;
        y = m_posAbsolute.y;
+       m_atf.clear();
+     }
+
+    void getCursorSpaceGL(float& x, float& y)
+     { while(m_atf.test_and_set()) {}
+       x = -1.0f + 2.0f * (float)m_posAbsolute.x / (float)m_width;
+       y = 1.0f - 2.0f * (float)m_posAbsolute.y / (float)m_height;
+       m_atf.clear();
      }
 
     static Mousedevice& instance();

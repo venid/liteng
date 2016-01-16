@@ -307,8 +307,16 @@ void Control :: rotate(int flag, int param)
 
 // ---------------------------------------------------------------
 
-Build :: Build(unsigned int pt) : Component(pt)
- { m_update = (CUpdate) &Build::doUpdate;
+Build :: Build(Lua::Var& tab, unsigned int pt) : Component(pt)
+ { Lua::Var pos = tab["pos"];
+   if(pos == Lua::TAB)
+    { m_pos.x = pos[1];
+      m_pos.y = pos[2];
+      m_pos.z = pos[3];
+    }
+   else m_pos = glm::vec3(0.f);
+
+   m_update = (CUpdate) &Build::doUpdate;
    privat_var = Build::privat_tab;
    public_var = Build::public_tab;
    m_id = 0;
@@ -374,9 +382,9 @@ bool Build :: init()
    mp_segment->push_back(sgm);
 
    glm::mat4 mt(1.f);
-  // mt[3][0] = 1.f;
-  // mt[3][1] = 0.f;
-  // mt[3][2] = -2.f;
+   mt[3][0] = m_pos.x;
+   mt[3][1] = m_pos.y;
+   mt[3][2] = m_pos.z;
    memcpy(mp_trans, &mt, sizeof(glm::mat4));
 
    return true;

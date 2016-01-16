@@ -98,7 +98,7 @@ void ListDraw :: doUpdate()
 
 // ---------------------------------------------------------------------
 
-MaterialDraw :: MaterialDraw(Lua::Var& tab, unsigned int pt) : Component(pt)
+MaterialDraw :: MaterialDraw(unsigned int pt) : Component(pt)
  { public_var = MaterialDraw::public_tab;
    privat_var = MaterialDraw::privat_tab;
    m_update = (CUpdate)&MaterialDraw::doUpdate;

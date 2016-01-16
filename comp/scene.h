@@ -135,10 +135,11 @@ class Build : public Component
     std::vector<Segment*> *mp_segment;
     ResManager *mp_res;
 
+    glm::vec3 m_pos;
     glm::mat4 *mp_trans;
 
    public:
-    Build(unsigned int pt);
+    Build(Lua::Var& tab, unsigned int pt);
     ~Build() {}
 
     void linkVar(int def, void* data);
@@ -148,7 +149,7 @@ class Build : public Component
     void doUpdate();
 
     static Object* Create(Lua::Var* tab, unsigned int m_p)
-     {return new Build(m_p);}
+     {return new Build(*tab, m_p);}
 
     static int privat_tab[];
     static int public_tab[];

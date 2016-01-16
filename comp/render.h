@@ -67,7 +67,7 @@ class MaterialDraw : public Component
     Generic **mp_show;
 
    public:
-    MaterialDraw(Lua::Var& tab, unsigned int pt);
+    MaterialDraw(unsigned int pt);
     ~MaterialDraw();
 
     void linkVar(int def, void* data);
@@ -78,7 +78,7 @@ class MaterialDraw : public Component
     void doUpdate();
 
     static Object* Create(Lua::Var* tab, unsigned int m_p)
-     {return new MaterialDraw(*tab, m_p);}
+     {return new MaterialDraw(m_p);}
 
     static int public_tab[];
     static int privat_tab[];
