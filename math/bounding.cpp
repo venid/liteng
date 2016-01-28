@@ -206,6 +206,17 @@ int OBBox :: classify(const Plane& plane) const
    return 0;
  }
 
+float OBBox :: intersects(const Ray& ray) const
+ { Ray newray;
+   glm::vec3 tmp = ray.getOrigin();
+   glm::mat3 rot(m_trans);
+   AABBox box(m_pos, m_scale);
+
+   newray.setDir(rot * ray.getDir());
+   newray.setOrigin(glm::vec3(m_trans * glm::vec4(tmp.x, tmp.y, tmp.z, 1.f)));
+   return box.intersects(newray);
+ }
+
 bool OBBox :: intersects(const Frustrum& frustrum) const
  { glm::vec3  tmp[8];
    glm::vec3 min = - m_scale;
