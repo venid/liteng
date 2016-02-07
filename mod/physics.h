@@ -12,6 +12,7 @@ class Physics : public Module
     bool init(Lua::State &lua);
     bool msg_processing();
     void set_var();
+    void connect();
 
     int init_update(double);
     int run_update(double);
@@ -28,5 +29,4 @@ class Physics : public Module
      }
 
     static Meta::Base Instance;
-    static unsigned int messages_list[];
  };

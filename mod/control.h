@@ -13,6 +13,7 @@ class Control : public Module
     bool msg_processing();
     bool init(Lua::State &lua);
     void set_var();
+    void connect();
 
     int init_update(double);
     int run_update(double);
@@ -31,5 +32,4 @@ class Control : public Module
      }
 
     static Meta::Base Instance;
-    static unsigned int messages_list[];
  };

@@ -43,7 +43,7 @@ void Manager :: add_module(Module* mdl)
 
    (*thr)->addModule(mdl);
    mdl->setNumQueue(create_queue(*thr));
-   reg_message(mdl);
+   mdl->connectMsg();
    LOG_INFO("Manager: Registration module \"%s\"", mdl->getName());
  }
 
@@ -56,13 +56,14 @@ int Manager :: create_queue(Thread* thr)
    return qModule.size() - 1;
  }
 
-void Manager :: reg_message(Module* mdl)
- { unsigned int num = mdl->getNumQueue();
-   unsigned int* msg = mdl->getMsgList();
+void Manager :: reg_message(unsigned int MsgId, unsigned int NumQueue)
+ { std::multimap<unsigned int, unsigned int>::iterator it;
+   auto ret = msgMan->msgTab.equal_range(MsgId);
+   for(it = ret.first; it != ret.second; ++it)
+    if(it->second == NumQueue) break;
 
-   for(int i = 0; msg[i] != 0; i++)
-    msgTab.emplace(msg[i], num);
- }
+   if(it == ret.second) msgMan->msgTab.emplace(MsgId, NumQueue);
+  }
 
 bool Manager :: handlerMsg(int msg, Object* item, int param)
  { switch(msg)
@@ -83,6 +84,11 @@ bool Manager :: handlerMsg(int msg, Object* item, int param)
            }
         }
        else LOG_ERROR("Manager: Invalid parameter in the message MSG_ACTIVE.");
+       return false;
+      case MSG_CONNECT:
+       if(item->isSuperClass(Module::Instance))
+        reg_message((unsigned int)param, ((Module*)item)->getNumQueue());
+       else LOG_ERROR("Manager: Invalid parameter in the message MSG_CONNECT.");
        return false;
     }
    return true;
@@ -163,7 +169,4 @@ unsigned int Manager :: addThread(Thread* thr)
  }
 
 void Manager :: addModule(Module* mdl)
- { msgMan->lock();
-   msgMan->add_module(mdl);
-   msgMan->unlock();
- }
+ { msgMan->add_module(mdl); }

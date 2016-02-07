@@ -4,6 +4,8 @@
 #include "unit.h"
 #include "log.h"
 #include "typevar.h"
+#include "manager.h"
+#include "defs.h"
 #include <malloc.h>
 #include <cstring>
 #include <algorithm>
@@ -13,13 +15,11 @@ META_PROPERTY(Module)
 META_OBJECT(Module, Module, &Object::Instance)
 
 std::vector<Module*> Module :: module_tab;
-unsigned int Module :: messages_list[] = {0};
 
 
 Module :: Module(const char* Name) : Object(Name, Object::genID())
  { action = false;
    thrID = 0;
-   tabMessages = messages_list;
    do_update = &Module::empty_update;
    module_tab.push_back(this);
    metaClass = &Instance;
@@ -28,6 +28,9 @@ Module :: Module(const char* Name) : Object(Name, Object::genID())
 
 Module :: ~Module()
  { LOG_INFO("Module: Delete \"%s\"", getName()); }
+
+void Module :: connect_base()
+ { Manager::sendMessage(MSG_CONNECT, this, MSG_FINISH); }
 
 void Module :: addComp(Unit* un)
  { int i, def;

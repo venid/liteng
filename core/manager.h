@@ -37,7 +37,7 @@ class Manager
     void start();
     unsigned int add_thread(Thread* thr);
     void add_module(Module* mdl);
-    void reg_message(Module* mdl);
+    void reg_message(unsigned int MsgId, unsigned int NumQueue);
     int create_queue(Thread* thr);
     bool clear(); // delete all items
 

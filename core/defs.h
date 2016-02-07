@@ -8,6 +8,8 @@
 #define MSG_ACTIVE        0x00000011
 #define MSG_DEACTIVE      0x00000012
 #define MSG_FINISH        0x00000013
+#define MSG_CONNECT       0x00000014
+#define MSG_DECONNECT     0x00000015
 
 #define MSG_TEST_1        0x00000001
 #define MSG_TEST_2        0x00000002

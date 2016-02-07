@@ -19,8 +19,7 @@ class Module : public Object
     bool action;
     unsigned int thrID;
     unsigned int numQueue;
-    unsigned int* tabMessages;
-
+   
     std::multimap<unsigned int, Component*> components;
     std::vector<Component*> staticComponents;
 
@@ -32,6 +31,9 @@ class Module : public Object
 
     int (Module::*do_update)(double);
 
+    void connect_base();
+    virtual void connect() { }
+
     static std::vector<Module*> module_tab;
 
    public:
@@ -40,10 +42,14 @@ class Module : public Object
 
     void setThreadID(unsigned int ID) {thrID = ID;}
     unsigned int  getThreadId() {return thrID;}
-    unsigned int* getMsgList()  {return tabMessages;}
 
     void setNumQueue(unsigned int num) {numQueue = num;}
     unsigned int getNumQueue() {return numQueue;}
+
+    void connectMsg()
+     { connect_base();
+       connect();
+     }
 
     void addComp(Unit*);
     void delComp();
@@ -57,7 +63,5 @@ class Module : public Object
     static unsigned int getModuleID(const char* Name);
 
     static Meta::Base Instance;
-    static unsigned int messages_list[];
-
  };
 

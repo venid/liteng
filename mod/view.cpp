@@ -21,8 +21,6 @@ META_METHODS(View,
 META_PROPERTY(View)
 META_OBJECT(View, View, &Module::Instance)
 
-unsigned int View :: messages_list[] = {MSG_FINISH, MSG_TEST_1, MSG_ADD_UNIT, 0};
-
 //----------------------------------------------------------------
 
 typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
@@ -30,7 +28,6 @@ glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
 
 View :: View(const char* Name) : Module(Name), winRect{400, 300, 0, 0}
  { ctx = 0;
-   tabMessages = messages_list;
    do_update = (MUpdate) &View::init_update;
    metaClass = &Instance;
  }
@@ -58,6 +55,11 @@ bool View :: msg_processing()
 
 void View :: set_var()
  { pool.emplace(vWIN_RECT, Link{1, setVec2i(winRect.width, winRect.height)}); }
+
+void View :: connect()
+ { Manager::sendMessage(MSG_CONNECT, this, MSG_TEST_1);
+   Manager::sendMessage(MSG_CONNECT, this, MSG_ADD_UNIT);
+ }
 
 bool View :: init(Lua::State &lua)
  { Lua::Var tab = lua[getName()];

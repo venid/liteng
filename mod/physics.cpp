@@ -12,13 +12,10 @@ META_METHODS(Physics,
 META_PROPERTY(Physics)
 META_OBJECT(Physics, Physics, &Module::Instance)
 
-unsigned int Physics :: messages_list[] = {MSG_FINISH, MSG_ADD_UNIT, 0};
-
 /// -----------------------------------------------------------------------------------
 
 Physics :: Physics(const char* Name) : Module(Name)
  { do_update = (MUpdate)&Physics::init_update;
-   tabMessages = messages_list;
    metaClass = &Instance;
  }
 
@@ -26,6 +23,9 @@ void Physics :: set_var()
  { mp_delta = new double;
    pool.emplace(vDELTA_TIME, Link{1, mp_delta});
  }
+
+void Physics :: connect()
+ { Manager::sendMessage(MSG_CONNECT, this, MSG_ADD_UNIT); }
 
 bool Physics :: init(Lua::State &lua)
  {

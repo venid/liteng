@@ -25,6 +25,7 @@ class View : public Module
     bool init(Lua::State &lua);
     bool msg_processing();
     void set_var();
+    void connect();
     void render();
 
     int init_update(double);
@@ -42,8 +43,6 @@ class View : public Module
      }
 
     static Meta::Base Instance;
-    static unsigned int messages_list[];
-
  };
 
 #endif // VIEW_H_INCLUDE 

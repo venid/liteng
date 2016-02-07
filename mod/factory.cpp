@@ -23,7 +23,6 @@ META_METHODS(Factory,
 META_PROPERTY(Factory)
 META_OBJECT(Factory, Factory, &Module::Instance)
 
-unsigned int Factory :: messages_list[] = {MSG_FINISH, MSG_TEST_5, MSG_MAKE_UNIT, MSG_ADD_UNIT, 0};
 ResManager* Factory :: resManager = nullptr;
 
 // ------------------------------------------------------------------------------------------------
@@ -31,7 +30,6 @@ ResManager* Factory :: resManager = nullptr;
 Factory :: Factory(const char* Name) : Module(Name), lvm()
  { resManager = new ResManager(lvm.vm);
    do_update = (MUpdate) &Factory::init_update;
-   tabMessages = messages_list;
    metaClass = &Instance;
  }
 
@@ -40,6 +38,12 @@ Factory :: ~Factory()
 
 void Factory :: set_var()
  { pool.emplace(vRES_MANAGER, Link{1, setPointer(resManager)}); }
+
+void Factory :: connect()
+ { Manager::sendMessage(MSG_CONNECT, this, MSG_TEST_5);
+   Manager::sendMessage(MSG_CONNECT, this, MSG_ADD_UNIT);
+   Manager::sendMessage(MSG_CONNECT, this, MSG_MAKE_UNIT);
+ }
 
 bool Factory :: msg_processing()
  { int tMsg, param;

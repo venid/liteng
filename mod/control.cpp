@@ -12,13 +12,10 @@ META_METHODS(Control,
 META_PROPERTY(Control)
 META_OBJECT(Control, Control, &Module::Instance)
 
-unsigned int Control :: messages_list[] = {MSG_FINISH, MSG_ADD_UNIT, MSG_ADD_SCRIPT, 0};
-
 // ----------------------------------------------------------------------------------
 
 Control :: Control(const char* Name) : Module(Name), lvm()
- { tabMessages = messages_list;
-   do_update = (MUpdate)&Control::init_update;
+ { do_update = (MUpdate)&Control::init_update;
    metaClass = &Instance;
  }
 
@@ -32,6 +29,11 @@ bool Control :: init(Lua::State &lua)
 
 void Control :: set_var()
  { pool.emplace(vLVM, Link{1, setPointer(&lvm)}); }
+
+void Control :: connect()
+ { Manager::sendMessage(MSG_CONNECT, this, MSG_ADD_UNIT);
+   Manager::sendMessage(MSG_CONNECT, this, MSG_ADD_SCRIPT);
+ }
 
 bool Control :: msg_processing()
  { int tMsg, param;
