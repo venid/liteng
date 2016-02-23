@@ -14,6 +14,11 @@
 
 using namespace Scene;
 
+META_METHODS(World,
+ METHOD(create, World::Create))
+META_PROPERTY(World)
+META_OBJECT(World, Scene::World, &Component::Instance)
+
 META_METHODS(Render,
  METHOD(create, Render::Create))
 META_PROPERTY(Render)
@@ -36,6 +41,8 @@ META_METHODS(Build,
 META_PROPERTY(Build)
 META_OBJECT(Build, Scene::Build, &Component::Instance)
 
+int World :: public_tab[] = {vWORLD, 0};
+
 int Render :: privat_tab[] = {vVECTOR_SEGMENT, vTRANSLATE, 0};
 int Render :: public_tab[] = {vVECTOR_SCENE, 0};
 
@@ -49,6 +56,74 @@ int Build :: privat_tab[] = {vVECTOR_SEGMENT, vTRANSLATE, 0};
 int Build :: public_tab[] = {vRES_MANAGER, 0};
 
 // ---------------------------------------------------------------
+
+World :: World(unsigned int pt) : Component(pt)
+ { m_update = (CUpdate) &World::doUpdate;
+   m_id = 0;
+   public_var = World::public_tab;
+   metaClass = &Instance;
+
+   root.setId(id);
+   root.m_box.setPos(glm::vec3(0.f));
+   root.m_box.setScale(glm::vec3(10.f, 10.f, 10.f));
+   root.m_type = NODE_INTERNAL;
+   root.imaging();
+   
+   int num = root.getId();
+   Node* tmp = new Node();
+   tmp->setId(Object::genID());
+   tmp->m_box.setPos(glm::vec3(0.0f, -5.f, 0.f));
+   tmp->m_box.setScale(glm::vec3(7.0f, 3.f, 7.f));
+   tmp->m_type = NODE_EXTERNAL;
+   tmp->imaging();
+   root.add(tmp, num);
+
+   int num2 = tmp->getId();
+   tmp = new Node();
+   tmp->setId(Object::genID());
+   tmp->m_box.setPos(glm::vec3(1.f, 0.f, 0.f));
+   tmp->m_box.setScale(glm::vec3(5.f, 2.5f, 6.f));
+   tmp->m_type = NODE_INTERNAL;
+   tmp->imaging();
+   root.add(tmp, num2);
+   
+   tmp = new Node();
+   tmp->setId(Object::genID());
+   tmp->m_box.setPos(glm::vec3(5.f, 4.f, 0.f));
+   tmp->m_box.setScale(glm::vec3(3.f, 3.f, 3.f));
+   tmp->m_type = NODE_EXTERNAL;
+   tmp->imaging();
+   root.add(tmp, num);
+
+   tmp = new Node();
+   tmp->setId(Object::genID());
+   tmp->m_box.setPos(glm::vec3(-2.f, 5.f, 0.f));
+   tmp->m_box.setScale(glm::vec3(3.f, 1.f, 8.f));
+   tmp->m_type = NODE_EXTERNAL;
+   tmp->imaging();
+   root.add(tmp, num);
+ }
+
+void World :: linkVar(int def, void* data)
+ { World** wd;
+   switch(def)
+    { case vWORLD:
+       wd = (World**)data;
+       *wd = this;
+       break;
+    }
+ }
+
+void World :: doUpdate()
+ { }
+
+void World :: createList(Generic** head, MemoryPool<Generic> &pool)
+ { glm::mat4 tmp(1.f);
+  
+   root.isVisible(head, pool, tmp);
+ }
+
+// ------------------------------------------------------------------
 
 Render :: Render(unsigned int pt) : Component(pt), m_trans(1.f)
  { m_update = (CUpdate) &Render::doUpdate;

@@ -24,15 +24,16 @@ META_METHODS(Control,
  METHOD(create, Control::Create),
  METHOD(setFlag, Control::setFlag),
  METHOD(setCursor, Control::setCursor),
- METHOD(rotation, Control::rotation),
- METHOD(dirDist, Control::dirDist))
-META_PROPERTY(Control)
+ METHOD(rotation, Control::rotation))
+META_PROPERTY(Control,
+ PROP(distance, Control::getDistance, Control::setDistance))
 META_OBJECT(Control, Camera::Control, &Component::Instance)
 
-int Render :: privat_tab[] = {vCAM_TRANSLATE, vCAM_POS, 0};
+int Render :: privat_tab[] = {vCAM_DIMENSIONS, vCAM_TRANSLATE, 0};
 int Render :: public_tab[] = {vCAMERA, vWIN_RECT, 0};
 
-int Translate :: privat_tab[] = {vCAM_TRANSLATE, vCAM_ORBIT_DIST, vCAM_TURN, vCAM_POS, 0};
+int Translate :: privat_tab[] = {vCAM_DIMENSIONS, vCAM_TRANSLATE, vCAM_ORBIT_DIST, vCAM_TURN, 0};
+int Translate :: public_tab[] = {vCAMERA, 0};
 
 int Control :: public_tab[] = {vLVM, 0};
 int Control :: privat_tab[] = {vCAM_ORBIT_DIST, vCAM_TURN, 0};
@@ -69,17 +70,15 @@ Render :: Render(Lua::Var& tab, unsigned int pt) : Component(pt)
 Render :: ~Render() { }
 
 bool Render :: init()
- { float aspectRation = (float)rect.x/(float)rect.y;
-   m_fovY = 1.f / tanf(0.5f * m_fov);
-   m_fovX = m_fovY / aspectRation;
-   m_proj = glm::perspective(m_fov, aspectRation, m_znear, m_zfar);
-   m_ortho = glm::ortho(0.f, (float)rect.x, 0.f, (float)rect.y);
+ { mp_dimensions->x = m_zfar;
+   mp_dimensions->y = m_znear;
+   mp_dimensions->w = m_zfar / (1.f / tanf(0.5f * m_fov)); //fovY
+   mp_dimensions->z = m_zfar / (mp_dimensions->w / m_aspect); //fovX
    return true;
  }
 
 void Render :: linkVar(int def, void* data)
  { glm::ivec2 *iv2;
-   Render** cam;
 
    switch(def)
     { case vCAM_TRANSLATE:
@@ -87,15 +86,15 @@ void Render :: linkVar(int def, void* data)
        break;
       case vWIN_RECT:
        iv2 = (glm::ivec2*)data;
-       rect.x = iv2->x;
-       rect.y = iv2->y;
+       m_aspect = (float)iv2->x / (float)iv2->y;
+       m_proj = glm::perspective(m_fov, m_aspect, m_znear, m_zfar);
+       m_ortho = glm::ortho(0.f, (float)iv2->x, 0.f, (float)iv2->y);
        break;
       case vCAMERA:
-       cam = (Render**)data;
-       *cam = this;
+       (*(Render**)data) = this;
        break;
-      case vCAM_POS:
-       mp_pos = (glm::vec3*)data;
+      case vCAM_DIMENSIONS:
+       mp_dimensions = (glm::vec4*)data;
        break;
     }
  }
@@ -104,46 +103,22 @@ void Render :: linkVar(int def, void* data)
 void Render :: doUpdate()
  { m_unit->lock();
    memcpy(&m_view, mp_transMatrix, sizeof(glm::mat4));
-   memcpy(&m_pos, mp_pos, sizeof(glm::vec3));
    m_unit->unlock();
 
    m_pvMatrix = m_proj * m_view;
-   buildFrustrum(m_view);
- }
-
-void Render :: buildFrustrum(glm::mat4& mt)
- { glm::vec3 viewDir(mt[0][2], mt[1][2], mt[2][2]);
-   glm::vec3 rightDir(mt[0][0], mt[1][0], mt[2][0]);
-   glm::vec3 upDir(mt[0][1], mt[1][1], mt[2][1]);
-
-   viewDir *= -1.f;
-   glm::vec3 v(viewDir  * m_zfar );
-   glm::vec3 hr(rightDir * (m_zfar / m_fovX) );
-   glm::vec3 hu(upDir    * (m_zfar / m_fovY) );
-   glm::vec3 vv[4];
-
-   vv [0] = m_pos + v + hr + hu;
-   vv [1] = m_pos + v - hr + hu;
-   vv [2] = m_pos + v - hr - hu;
-   vv [3] = m_pos + v + hr - hu;
-
-   m_frustrum.set(m_pos, vv, 4);
-   Plane pl = Plane(-viewDir, m_pos + m_zfar * viewDir);
-   m_frustrum.addPlane(pl);
-   pl = Plane(viewDir, m_pos + m_znear * viewDir);
-   m_frustrum.addPlane(pl);
  }
 
 // --------------------------------------------------------------
 
 Translate :: Translate(unsigned int pt) : Component(pt)
- { m_orbitDist = 15.f;
+ { m_orbitDist = 45.f;
 
    m_orientation = glm::quat(1.f, 0.f, 0.f, 0.f);
    m_pos = glm::vec3(0.f);
    m_target = glm::vec3(0.f, 0.f, 0.f);
 
    privat_var = Translate::privat_tab;
+   public_var = Translate::public_tab;
    m_update = (CUpdate)&Translate::doUpdate;
    m_id = 0;
    metaClass = &Instance;
@@ -154,10 +129,7 @@ Translate :: ~Translate()
 
 void Translate :: linkVar(int def, void* data)
  { switch(def)
-    { case vCAM_POS:
-       mp_pos = (glm::vec3*)data;
-       break;
-      case vCAM_TRANSLATE:
+    { case vCAM_TRANSLATE:
        mp_transMatrix = (glm::mat4*)data;
        break;
       case vCAM_ORBIT_DIST:
@@ -165,6 +137,12 @@ void Translate :: linkVar(int def, void* data)
        break;
       case vCAM_TURN:
        mp_turn = (glm::vec2*)data;
+       break;
+      case vCAM_DIMENSIONS:
+       mp_dimensions = (glm::vec4*)data;
+       break;
+      case vCAMERA:
+       (*(Translate**)data) = this;
        break;
     }
  }
@@ -179,10 +157,10 @@ void Translate :: doUpdate()
    m_orbitDist += dst;
    if((tmp.x != 0.f)||(tmp.y != 0.f)) rotate(tmp.y * 0.005f, tmp.x * 0.005f, 0.f);
    updateTransMatrix();
+   buildFrustrum();
 
    m_unit->lock();
    memcpy(mp_transMatrix, &m_matrix, sizeof(glm::mat4));
-   memcpy(mp_pos, &m_pos, sizeof(glm::vec3));
    m_unit->unlock();
  }
 
@@ -197,7 +175,30 @@ void Translate :: updateTransMatrix()
    m_matrix[3][2] = - glm::dot(zAxis, m_pos);
  }
 
-void Camera::Translate :: rotateOrbit(float headingDegrees, float pitchDegrees)
+void Translate :: buildFrustrum()
+ { glm::vec3 viewDir(m_matrix[0][2], m_matrix[1][2], m_matrix[2][2]);
+   glm::vec3 rightDir(m_matrix[0][0], m_matrix[1][0], m_matrix[2][0]);
+   glm::vec3 upDir(m_matrix[0][1], m_matrix[1][1], m_matrix[2][1]);
+
+   viewDir *= -1.f;
+   glm::vec3 v(viewDir   * mp_dimensions->x);
+   glm::vec3 hr(rightDir * mp_dimensions->z);
+   glm::vec3 hu(upDir    * mp_dimensions->w);
+   glm::vec3 vv[4];
+
+   vv [0] = m_pos + v + hr + hu;
+   vv [1] = m_pos + v - hr + hu;
+   vv [2] = m_pos + v - hr - hu;
+   vv [3] = m_pos + v + hr - hu;
+
+   m_frustrum.set(m_pos, vv, 4);
+   Plane pl = Plane(-viewDir, m_pos + mp_dimensions->x * viewDir);
+   m_frustrum.addPlane(pl);
+   pl = Plane(viewDir, m_pos + mp_dimensions->y * viewDir);
+   m_frustrum.addPlane(pl);
+ }
+
+void Translate :: rotateOrbit(float headingDegrees, float pitchDegrees)
  { glm::quat rot;
 
    if (headingDegrees != 0.0f)
@@ -259,10 +260,18 @@ void Control :: doUpdate()
 
  }
 
-void Control :: dirDist(float volume)
+void Control :: setDistance(float volume)
  { m_unit->lock();
-   *mp_dist += volume;
+   *mp_dist = volume;
    m_unit->unlock();
+ }
+
+float Control :: getDistance()
+ { float dist;
+   m_unit->lock();
+   dist = *mp_dist;
+   m_unit->unlock();
+   return dist;
  }
 
 void Control :: rotation(int x, int y)

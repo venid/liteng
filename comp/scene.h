@@ -10,6 +10,7 @@
 #include "MemoryPool.h"
 #include "typevar.h"
 #include "transform.h"
+#include "node.h"
 
 namespace Lua { class Var; }
 
@@ -19,6 +20,28 @@ class Frustrum;
 
 namespace Scene
 {
+
+class World : public Component
+ { private:
+    Node root;
+   public:
+    World(unsigned int pt);
+    ~World() {}
+
+    void linkVar(int def, void* data);
+
+    void doUpdate();
+
+    static Object* Create(Lua::Var* tab, unsigned int m_p)
+     {return new World(m_p);}
+
+    void createList(Generic** head, MemoryPool<Generic> &pool);
+
+    static int public_tab[];
+    static Meta::Base Instance;
+ };
+
+// --------------------------------------------------------
 
 class Render : public Component
  { private:

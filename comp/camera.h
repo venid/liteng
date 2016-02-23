@@ -12,28 +12,21 @@ namespace Camera
 
 class Render : public Component
  { private:
-    glm::ivec2 rect;
+    float m_aspect;
 
     glm::mat4 m_proj;
     glm::mat4 m_ortho;
+
     glm::mat4 m_view;
     glm::mat4 m_pvMatrix;
 
     glm::mat4 *mp_transMatrix;
 
-    glm::vec3 m_pos;
-    glm::vec3 *mp_pos;
-
-    Frustrum  m_frustrum;
-
     float m_zfar;
     float m_znear;
     float m_fov;
 
-    float m_fovX;
-    float m_fovY;
-
-    void buildFrustrum(glm::mat4& mt);
+    glm::vec4 *mp_dimensions;
 
    public:
     Render(Lua::Var& tab, unsigned int pt);
@@ -45,7 +38,6 @@ class Render : public Component
 
     void doUpdate();
 
-    Frustrum& getFrustrum() { return m_frustrum; }
     glm::mat4& getProject() { return m_proj; }
     glm::mat4& getView() { return m_view; }
     glm::mat4& getPVMat() { return m_pvMatrix; }
@@ -76,9 +68,12 @@ class Translate : public Component
     glm::vec3 m_pos;
     glm::vec3 m_target;
 
-    glm::vec3 *mp_pos;
+    glm::vec4 *mp_dimensions;
+
+    Frustrum  m_frustrum;
 
     void updateTransMatrix();
+    void buildFrustrum();
     void rotateOrbit(float headingDegrees, float pitchDegrees);
     void rotate(float headingDegrees, float pitchDegrees, float rollDegrees);
    public:
@@ -89,10 +84,13 @@ class Translate : public Component
 
      void doUpdate();
 
+     Frustrum& getFrustrum() { return m_frustrum; }
+
      static Object* Create(Lua::Var *tab, unsigned int m_p)
       {return new Translate(m_p);}
 
      static int privat_tab[];
+     static int public_tab[];
 
      static Meta::Base Instance;
  };
@@ -104,6 +102,7 @@ class Control : public Component
     Lua::State *lvm;
 
     float *mp_dist;
+
     glm::vec2 *mp_turn;
     int m_flag;
     glm::ivec2 m_cursor;
@@ -120,12 +119,15 @@ class Control : public Component
     static Object* Create(Lua::Var* tab, unsigned int m_p)
      { return new Control(m_p); }
 
-    void dirDist(float volume);
+    void  setDistance(float volume);
+    float getDistance();
+
     void rotation(int x, int y);
-    void setFlag(int flag)
-     { m_flag = flag; }
-    void setCursor(int x, int y)
-     { m_cursor = glm::ivec2(x, y); }
+    void move(int dir);
+
+    void setType(int tp);
+    void setFlag(int flag)       { m_flag = flag; }
+    void setCursor(int x, int y) { m_cursor = glm::ivec2(x, y); }
 
     static int privat_tab[];
     static int public_tab[];

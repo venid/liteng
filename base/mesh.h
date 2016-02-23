@@ -41,6 +41,7 @@ class Mesh : public Object
     ~Mesh();
 
     bool init();
+    bool isInit() { return m_init; }
     bool update();
     void clear();
 
@@ -58,6 +59,7 @@ class Mesh : public Object
     void computeTextureCoord(float scale = 1.f);
 
     static Mesh* makeBox(float x, float y, float z);
+    static Mesh* makeBoxFrame(glm::vec3& sz, glm::vec3& color);
 
     static Meta::Base Instance;
  };

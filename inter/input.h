@@ -46,9 +46,8 @@ class Mousedevice
     char m_flags;
     bool m_focus;
 
-    int   m_wheel_flag;
-    float m_wheel;
-    float m_wheel_delta;
+    int m_wheel_flag;
+    int m_wheel;
 
     unsigned int m_width;
     unsigned int m_height;
@@ -96,6 +95,12 @@ class Mousedevice
      { while(m_atf.test_and_set()) {}
        x = -1.0f + 2.0f * (float)m_posAbsolute.x / (float)m_width;
        y = 1.0f - 2.0f * (float)m_posAbsolute.y / (float)m_height;
+       m_atf.clear();
+     }
+
+    void getWheel(int &flag)
+     { while(m_atf.test_and_set()) {}
+       flag = m_wheel;
        m_atf.clear();
      }
 

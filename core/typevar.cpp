@@ -4,7 +4,6 @@
 #include <glm/gtc/quaternion.hpp>
 #include "object.h"
 #include "vertex.h"
-//#include "frustrum.h"
 #include "timer.h"
 //#include "bounding.h"
 //#include "fbuffer.h"
@@ -36,9 +35,6 @@ void  delMat4f(void* vr) { delete (glm::mat4*)vr; }
 
 void* setQuat() { return new glm::quat(1.f, 0.f, 0.f, 0.f); }
 void  delQuat(void* vr) { delete (glm::quat*)vr; }
-
-//void* setFrustrum() { return new Frustrum(); }
-//void  delFrustrum(void* vr) { delete (Frustrum*)vr; }
 
 void* setGeneric()
  { Generic** pv = new Generic*;
@@ -129,7 +125,9 @@ std::map<int, std::pair<void*(*)(), void(*)(void*)> > VarTable
   { vRES_MANAGER,    VAR(void*)},
 
   { vLIST_DRAW,      {setGeneric, delGeneric}},
+  { vLIST_RENDER,    {setGeneric, delGeneric}},
 
+  { vWORLD,          {setPointer, delPointer}},
   { vVECTOR_SEGMENT, VEC(Object*)},
   { vVECTOR_SCENE,   VEC(Object*)},
 
@@ -138,7 +136,7 @@ std::map<int, std::pair<void*(*)(), void(*)(void*)> > VarTable
   { vCAM_TRANSLATE,  {setMat4f, delMat4f}},
   { vCAM_VIEW,       {setMat4f, delMat4f}},
   { vCAM_MATRIX,     {setMat4f, delMat4f}},
-//  { vCAM_FRUSTRUM,   {setFrustrum, delFrustrum}},
+  { vCAM_DIMENSIONS, {setVec4f, delVec4f}},
   { vCAM_ORBIT_DIST, {setFloat, delFloat}},
   { vCAM_TURN,       {setVec2f, delVec2f}},
   { vCAM_CONTROL,    {setInt, delInt}},

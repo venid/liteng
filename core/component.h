@@ -21,6 +21,7 @@ class Component : public Object
 
     int m_im;
     static int getting(luavm vm);
+    static int setting(luavm vm);
     static int calling(luavm vm);
 
    public:

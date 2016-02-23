@@ -176,6 +176,16 @@ void Mouse :: doUpdateButton()
  }
 
 void Mouse :: doUpdateWheele()
- {
+ { Lua::State* vm = lvm;
+   Lua::Var fn;
+   int flag;
 
+   if(Mousedevice::instance().isState(M_WHEELE))
+    { Mousedevice::instance().getWheel(flag);
+     // Mousedevice::instance().getPosAbsolute(x, y);
+      fn = (*vm)["EVENTS"][getId()];
+      if(fn == Lua::FUN) fn(flag); //, x, y);
+      else LOG_WARNING("Event::Mouse: Missing or incorrect value function (%i)", getId());
+      //LOG_SPAM("Event::Mouse: wheel event %i", flag);
+    }
  }

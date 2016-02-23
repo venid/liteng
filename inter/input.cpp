@@ -175,8 +175,7 @@ Mousedevice :: Mousedevice() : m_atf(ATOMIC_FLAG_INIT)
    m_win = 0;
    m_focus = false;
 
-   m_wheel_delta = 0.2f;
-   m_wheel = 0.f;
+   m_wheel = 0;
 
    m_posAbsolute = {0, 0};
    m_posRelative = {0.f, 0.f};
@@ -224,11 +223,10 @@ void Mousedevice :: update()
    while(m_atf.test_and_set()) {}
    if(m_dpy && m_win && m_focus)
     { XQueryPointer(m_dpy, m_win, &root, &child, &root_x, &root_y, &win_x, &win_y, &mask);
-      m_wheel = m_wheel_flag * m_wheel_delta;
       if(m_wheel_flag != 0)
        { m_flags |= M_WHEELE;
+         m_wheel = m_wheel_flag;
          m_wheel_flag = 0;
-         LOG_SPAM("Input::Mowse: wheel event");
        }
       m_atf.clear();
       m_posRelative.x = win_x - m_posAbsolute.x;

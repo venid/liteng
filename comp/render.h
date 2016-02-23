@@ -7,31 +7,68 @@
 
 namespace Lua { class Var; }
 namespace Scene { class Render; }
-namespace Camera { class Render; }
+namespace Camera { class Render; class Translate; }
+namespace Scene { class World; }
 
 class Shader;
 
 namespace Render
 {
 
-// ---------------------------------------------------
+// ------------------------------------------------------
 
-class Clear : public Component
+class Lists : public Component
  { private:
+    Scene::World **mp_world;
+
+    Camera::Translate** mpp_camera;
+
+    Generic **mp_render;
+    MemoryPool<Generic> pool;
 
    public:
-    Clear(unsigned int pt);
-    ~Clear() {}
+    Lists(unsigned int pt);
+    ~Lists() {}
+
+    void linkVar(int def, void* data);
 
     void doUpdate();
 
     static Object* Create(Lua::Var* tab, unsigned int m_p)
-     {return new Clear(m_p);}
+     {return new Lists(m_p);}
 
+    static int public_tab[];
+    static int privat_tab[];
     static Meta::Base Instance;
+
  };
 
 // ----------------------------------------------------
+
+class Update : public Component
+ { private:
+    Generic **mp_render;
+    Generic **mp_show;
+
+    Camera::Render** mpp_camera;
+
+   public:
+    Update(unsigned int pt);
+    ~Update() {}
+
+    void linkVar(int def, void* data);
+
+    void doUpdate();
+
+    static Object* Create(Lua::Var* tab, unsigned int m_p)
+     {return new Update(m_p);}
+
+    static int public_tab[];
+    static int privat_tab[];
+    static Meta::Base Instance;
+ };
+
+// -------------------------------------------------------
 
 class ListDraw : public Component
  { private:
@@ -60,15 +97,17 @@ class ListDraw : public Component
 
 // ----------------------------------------------------
 
-class MaterialDraw : public Component
+class Geometry : public Component
  { private:
+    Shader *m_shader;
+
     Camera::Render** mpp_camera;
 
     Generic **mp_show;
 
    public:
-    MaterialDraw(unsigned int pt);
-    ~MaterialDraw();
+    Geometry(Lua::Var& tab, unsigned int pt);
+    ~Geometry();
 
     void linkVar(int def, void* data);
 
@@ -78,7 +117,52 @@ class MaterialDraw : public Component
     void doUpdate();
 
     static Object* Create(Lua::Var* tab, unsigned int m_p)
-     {return new MaterialDraw(m_p);}
+     {return new Geometry(*tab, m_p);}
+
+    static int public_tab[];
+    static int privat_tab[];
+    static Meta::Base Instance;
+ };
+
+// -----------------------------------------------------
+
+class Lighting : public Component
+ { private:
+    Shader *m_shader;
+
+   public:
+    Lighting(Lua::Var& tab, unsigned int pt);
+    ~Lighting() {}
+
+    void doUpdate();
+
+    static Object* Create(Lua::Var* tab, unsigned int m_p)
+     {return new Lighting(*tab, m_p);}
+
+    static Meta::Base Instance;
+ };
+
+// -------------------------------------------------------
+
+class Compound : public Component
+ { private:
+    Camera::Render** mpp_camera;
+
+    Generic **mp_show;
+
+   public:
+    Compound(unsigned int pt);
+    ~Compound();
+
+    void linkVar(int def, void* data);
+
+    bool init();
+    void clear();
+
+    void doUpdate();
+
+    static Object* Create(Lua::Var* tab, unsigned int m_p)
+     {return new Compound(m_p);}
 
     static int public_tab[];
     static int privat_tab[];

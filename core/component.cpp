@@ -33,6 +33,7 @@ void Component :: RegMeta(Lua::State& st)
    if(tmp != Lua::TAB)
     { tmp = st.new_tab("Component", Lua::META);
       tmp.reg("__index", getting);
+      tmp.reg("__newindex", setting);
     }
  }
 
@@ -49,9 +50,50 @@ int Component :: getting(luavm vm)
    Component *cmp = (Component*)(*(Object**)sig);
    ++ sig;
    std::string str = (std::string)sig;
-   cmp->m_im = cmp->metaClass->indexOfMethod(str.c_str());
+   int im = cmp->metaClass->indexOfMethod(str.c_str());
+   if(im != -1)
+    { cmp->m_im = im;
+      return lvm.ret(calling);
+    }
+   else
+    { im = cmp->metaClass->indexOfProperty(str.c_str());
+      if(im != -1)
+       { Meta::Property prt = cmp->metaClass->property(im);
+         Meta::Type tp = prt.type();
+         Meta::Any arg = prt.read(cmp);
+         if(tp.id() == typeid(int))
+          return lvm.ret(Meta::any_cast<int>(arg));
+         if(tp.id() == typeid(float))
+           //LOG_SPAM("Component: %s call function getting(%s)", cmp->getName(), str.c_str());
+          return lvm.ret(Meta::any_cast<float>(arg));
+       }
+    }
    //LOG_SPAM("Component: %s call function getting(%s)", cmp->getName(), str.c_str());
-   return lvm.ret(calling);
+   return 0; //lvm.ret(calling);
+ }
+
+int Component :: setting(luavm vm)
+ { Lua::State lvm(vm);
+   Lua::Var sig = lvm.sig();
+   Component *cmp = (Component*)(*(Object**)sig);
+   ++ sig;
+   std::string str = (std::string)sig;
+   ++ sig;
+   Meta::Property prt = cmp->metaClass->property(cmp->metaClass->indexOfProperty(str.c_str()));
+   Meta::Type tp = prt.type();
+   Meta::Any arg;
+   if(tp.id() == typeid(int))
+    { arg.reset((int)sig);
+      prt.write(cmp, arg);
+      return 0;
+    }
+   if(tp.id() == typeid(float))
+    { arg.reset((float)sig);
+      prt.write(cmp, arg);
+      return 0;
+    }
+
+   return 0;
  }
 
 int Component :: calling(luavm vm)
