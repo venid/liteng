@@ -10,6 +10,10 @@
 namespace Camera
 {
 
+#define CAM_FLIGHT  0x01
+#define CAM_ORBIT   0x02
+//#define CAM_FREE    0x04
+
 class Render : public Component
  { private:
     float m_aspect;
@@ -54,45 +58,109 @@ class Render : public Component
 
 // -------------------------------------------------
 
+class Flight : public Component
+ { private:
+    int*  mp_type;
+
+    glm::mat4* mp_view;
+    glm::mat4  m_view;
+
+    glm::vec3 *mp_turn;
+
+    glm::quat m_orientation;
+
+    void rotate(float heading, float pitch, float roll);
+    void updateView();
+
+   public:
+    Flight(unsigned int pt);
+    ~Flight();
+
+    void linkVar(int def, void* data);
+
+    void doUpdate();
+
+    static Object* Create(Lua::Var *tab, unsigned int m_p)
+     {return new Flight(m_p);}
+
+    static int privat_tab[];
+
+    static Meta::Base Instance;
+ };
+
+// -------------------------------------------------
+
+class Orbit : public Component
+ { private:
+    int*  mp_type;
+
+    glm::mat4* mp_view;
+    glm::mat4  m_view;
+
+    float* mp_dist;
+    float  m_dist;
+
+    glm::vec3 *mp_turn;
+
+    glm::quat m_orientation;
+
+    void rotate(float heading, float pitch);
+    void updateView();
+
+   public:
+    Orbit(unsigned int pt);
+    ~Orbit();
+
+    void linkVar(int def, void* data);
+
+    void doUpdate();
+
+    static Object* Create(Lua::Var *tab, unsigned int m_p)
+     {return new Orbit(m_p);}
+
+    static int privat_tab[];
+
+    static Meta::Base Instance;
+ };
+
+// -------------------------------------------------------
+
 class Translate : public Component
  { private:
-    float m_orbitDist;
-    float *mp_dist;
+    int*  mp_type;
 
-    glm::mat4 *mp_transMatrix;
-    glm::vec2 *mp_turn;
-    //glm::vec3 *m_eye;
+    glm::mat4* mp_view;
+    glm::mat4  m_view;
 
-    glm::mat4 m_matrix;
-    glm::quat m_orientation;
     glm::vec3 m_pos;
+
     glm::vec3 m_target;
+    glm::vec3 *m_eye;
 
     glm::vec4 *mp_dimensions;
 
     Frustrum  m_frustrum;
 
-    void updateTransMatrix();
-    void buildFrustrum();
-    void rotateOrbit(float headingDegrees, float pitchDegrees);
-    void rotate(float headingDegrees, float pitchDegrees, float rollDegrees);
+    void buildFrustrum(glm::mat4 &matrix);
+
    public:
     Translate(unsigned int pt);
-     ~Translate();
+    ~Translate();
 
-     void linkVar(int def, void* data);
+    void linkVar(int def, void* data);
 
-     void doUpdate();
+    void doUpdate();
 
-     Frustrum& getFrustrum() { return m_frustrum; }
+    glm::mat4& getView() { return m_view; }
+    Frustrum& getFrustrum() { return m_frustrum; }
 
-     static Object* Create(Lua::Var *tab, unsigned int m_p)
-      {return new Translate(m_p);}
+    static Object* Create(Lua::Var *tab, unsigned int m_p)
+     {return new Translate(m_p);}
 
-     static int privat_tab[];
-     static int public_tab[];
+    static int privat_tab[];
+    static int public_tab[];
 
-     static Meta::Base Instance;
+    static Meta::Base Instance;
  };
 
 // -------------------------------------------------
@@ -101,9 +169,11 @@ class Control : public Component
  { private:
     Lua::State *lvm;
 
+    int* mp_type;
+
     float *mp_dist;
 
-    glm::vec2 *mp_turn;
+    glm::vec3 *mp_turn;
     int m_flag;
     glm::ivec2 m_cursor;
 
@@ -126,6 +196,8 @@ class Control : public Component
     void move(int dir);
 
     void setType(int tp);
+    int  getType();
+    
     void setFlag(int flag)       { m_flag = flag; }
     void setCursor(int x, int y) { m_cursor = glm::ivec2(x, y); }
 

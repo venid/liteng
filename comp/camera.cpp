@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 using namespace Camera;
 
@@ -14,6 +15,16 @@ META_METHODS(Render,
  METHOD(create, Render::Create))
 META_PROPERTY(Render)
 META_OBJECT(Render, Camera::Render, &Component::Instance)
+
+META_METHODS(Flight,
+ METHOD(create, Flight::Create))
+META_PROPERTY(Flight)
+META_OBJECT(Flight, Camera::Flight, &Component::Instance)
+
+META_METHODS(Orbit,
+ METHOD(create, Orbit::Create))
+META_PROPERTY(Orbit)
+META_OBJECT(Orbit, Camera::Orbit, &Component::Instance)
 
 META_METHODS(Translate,
  METHOD(create, Translate::Create))
@@ -26,17 +37,22 @@ META_METHODS(Control,
  METHOD(setCursor, Control::setCursor),
  METHOD(rotation, Control::rotation))
 META_PROPERTY(Control,
- PROP(distance, Control::getDistance, Control::setDistance))
+ PROP(distance, Control::getDistance, Control::setDistance),
+ PROP(types, Control::getType, Control::setType))
 META_OBJECT(Control, Camera::Control, &Component::Instance)
 
-int Render :: privat_tab[] = {vCAM_DIMENSIONS, vCAM_TRANSLATE, 0};
+int Render :: privat_tab[] = {vCAM_DIMENSIONS, vCAM_VIEW, 0};
 int Render :: public_tab[] = {vCAMERA, vWIN_RECT, 0};
 
-int Translate :: privat_tab[] = {vCAM_DIMENSIONS, vCAM_TRANSLATE, vCAM_ORBIT_DIST, vCAM_TURN, 0};
+int Flight :: privat_tab[] = {vCAM_TYPE, vCAM_VIEW, vCAM_TURN, 0};
+
+int Orbit :: privat_tab[] = {vCAM_TYPE, vCAM_VIEW, vCAM_ORBIT_DIST, vCAM_TURN, 0};
+
+int Translate :: privat_tab[] = {vCAM_DIMENSIONS, vCAM_VIEW, 0};
 int Translate :: public_tab[] = {vCAMERA, 0};
 
 int Control :: public_tab[] = {vLVM, 0};
-int Control :: privat_tab[] = {vCAM_ORBIT_DIST, vCAM_TURN, 0};
+int Control :: privat_tab[] = {vCAM_TYPE, vCAM_ORBIT_DIST, vCAM_TURN, 0};
 
 // ------------------------------------------------------------------------------
 
@@ -81,7 +97,7 @@ void Render :: linkVar(int def, void* data)
  { glm::ivec2 *iv2;
 
    switch(def)
-    { case vCAM_TRANSLATE:
+    { case vCAM_VIEW:
        mp_transMatrix = (glm::mat4*)data;
        break;
       case vWIN_RECT:
@@ -110,11 +126,153 @@ void Render :: doUpdate()
 
 // --------------------------------------------------------------
 
-Translate :: Translate(unsigned int pt) : Component(pt)
- { m_orbitDist = 45.f;
+Flight :: Flight(unsigned int pt) : Component(pt)
+ { m_orientation = glm::quat(1.f, 0.f, 0.f, 0.f);
 
+   privat_var = Flight::privat_tab;
+   m_update = (CUpdate)&Flight::doUpdate;
+   metaClass = &Instance;
+ }
+
+Flight :: ~Flight()
+ { }
+
+void Flight :: linkVar(int def, void* data)
+ { switch(def)
+    { case vCAM_TYPE:
+       mp_type = (int*)data;
+       break;
+      case vCAM_VIEW:
+       mp_view = (glm::mat4*)data;
+       break;
+      case vCAM_TURN:
+       mp_turn = (glm::vec3*)data;
+       break;
+    }
+ }
+
+void Flight :: doUpdate()
+ { m_unit->lock();
+   if(*mp_type != CAM_FLIGHT)
+    { m_unit->unlock();
+      return;
+    }
+   else
+    { glm::vec3 tmp(mp_turn->x, mp_turn->y, mp_turn->z);
+      *mp_turn = glm::vec3(0.f);
+      m_unit->unlock();
+
+      if((tmp.x != 0.f)||(tmp.y != 0.f)||(tmp.z != 0.f))
+       rotate(tmp.x * 0.005f, tmp.y * 0.005f, tmp.z);
+      updateView();
+
+      m_unit->lock();
+      memcpy(mp_view, &m_view, sizeof(glm::mat4));
+      m_unit->unlock();
+    }
+ }
+
+void Flight :: rotate(float heading, float pitch, float roll)
+ { glm::mat4 mat = glm::yawPitchRoll(-heading, -pitch, -roll);
+   glm::quat rot = glm::quat_cast(mat);
+
+   m_orientation = glm::normalize(rot * m_orientation);
+ }
+
+void Flight :: updateView()
+ { m_view = glm::mat4_cast(m_orientation);
+
+ //  m_view[3][0] = - glm::dot(glm::vec3(m_view[0][0], m_view[1][0], m_view[2][0]), pos);
+ //  m_view[3][1] = - glm::dot(glm::vec3(m_view[0][1], m_view[1][1], m_view[2][1]), pos);
+ //  m_view[3][2] = - glm::dot(zAxis, pos);
+ }
+
+// --------------------------------------------------------------
+
+Orbit :: Orbit(unsigned int pt) : Component(pt)
+ { m_dist = 45.f;
    m_orientation = glm::quat(1.f, 0.f, 0.f, 0.f);
-   m_pos = glm::vec3(0.f);
+
+   privat_var = Orbit::privat_tab;
+   m_update = (CUpdate)&Orbit::doUpdate;
+   metaClass = &Instance;
+ }
+
+Orbit :: ~Orbit()
+ { }
+
+void Orbit :: linkVar(int def, void* data)
+ { switch(def)
+    { case vCAM_TYPE:
+       mp_type = (int*)data;
+       break;
+      case vCAM_VIEW:
+       mp_view = (glm::mat4*)data;
+       break;
+      case vCAM_ORBIT_DIST:
+       mp_dist = (float*)data;
+       break;
+      case vCAM_TURN:
+       mp_turn = (glm::vec3*)data;
+       break;
+    }
+ }
+
+void Orbit :: doUpdate()
+ { m_unit->lock();
+   if(*mp_type != CAM_ORBIT)
+    { m_unit->unlock();
+      return;
+    }
+   else
+    { m_dist += *mp_dist;
+      glm::vec2 tmp(mp_turn->x, mp_turn->y);
+      *mp_turn = glm::vec3(0.f);
+      m_unit->unlock();
+
+      if((tmp.x != 0.f)||(tmp.y != 0.f))
+       rotate(tmp.y * 0.005f, tmp.x * 0.005f);
+      updateView();
+
+      m_unit->lock();
+      memcpy(mp_view, &m_view, sizeof(glm::mat4));
+      m_unit->unlock();
+    }
+ }
+
+void Orbit :: rotate(float heading, float pitch)
+ { pitch = -pitch;
+   heading = -heading;
+
+   glm::quat rot;
+
+   if (heading != 0.0f)
+    { rot = glm::angleAxis(heading, glm::vec3(1.f, 0.f, 0.f));
+      m_orientation = rot * m_orientation;
+    }
+   if (pitch != 0.0f)
+    { rot = glm::angleAxis(pitch, glm::vec3(0.f, 1.f, 0.f));
+      m_orientation = m_orientation * rot;
+    }
+
+   m_orientation = glm::normalize(m_orientation);
+ }
+
+void Orbit :: updateView()
+ { m_view = glm::mat4_cast(m_orientation);
+
+   glm::vec3 zAxis = glm::vec3(m_view[0][2], m_view[1][2], m_view[2][2]);
+   glm::vec3 pos = zAxis * m_dist;
+
+   m_view[3][0] = - glm::dot(glm::vec3(m_view[0][0], m_view[1][0], m_view[2][0]), pos);
+   m_view[3][1] = - glm::dot(glm::vec3(m_view[0][1], m_view[1][1], m_view[2][1]), pos);
+   m_view[3][2] = - glm::dot(zAxis, pos);
+ }
+
+// --------------------------------------------------------------
+
+Translate :: Translate(unsigned int pt) : Component(pt)
+ { m_pos = glm::vec3(0.f);
    m_target = glm::vec3(0.f, 0.f, 0.f);
 
    privat_var = Translate::privat_tab;
@@ -129,56 +287,30 @@ Translate :: ~Translate()
 
 void Translate :: linkVar(int def, void* data)
  { switch(def)
-    { case vCAM_TRANSLATE:
-       mp_transMatrix = (glm::mat4*)data;
-       break;
-      case vCAM_ORBIT_DIST:
-       mp_dist = (float*)data;
-       break;
-      case vCAM_TURN:
-       mp_turn = (glm::vec2*)data;
-       break;
-      case vCAM_DIMENSIONS:
+    { case vCAM_DIMENSIONS:
        mp_dimensions = (glm::vec4*)data;
        break;
       case vCAMERA:
        (*(Translate**)data) = this;
+       break;
+      case vCAM_VIEW:
+       mp_view = (glm::mat4*)data;
        break;
     }
  }
 
 void Translate :: doUpdate()
  { m_unit->lock();
-   float dst = *mp_dist;
-   glm::vec2 tmp(mp_turn->x, mp_turn->y);
-   *mp_turn = glm::vec2(0.f);
+   memcpy(&m_view, mp_view, sizeof(glm::mat4));
    m_unit->unlock();
 
-   m_orbitDist += dst;
-   if((tmp.x != 0.f)||(tmp.y != 0.f)) rotate(tmp.y * 0.005f, tmp.x * 0.005f, 0.f);
-   updateTransMatrix();
-   buildFrustrum();
-
-   m_unit->lock();
-   memcpy(mp_transMatrix, &m_matrix, sizeof(glm::mat4));
-   m_unit->unlock();
+   buildFrustrum(m_view);
  }
 
-void Translate :: updateTransMatrix()
- { m_matrix = glm::mat4_cast(m_orientation);
-
-   glm::vec3 zAxis = glm::vec3(m_matrix[0][2], m_matrix[1][2], m_matrix[2][2]);
-   m_pos = m_target + zAxis * m_orbitDist;
-
-   m_matrix[3][0] = - glm::dot(glm::vec3(m_matrix[0][0], m_matrix[1][0], m_matrix[2][0]), m_pos);
-   m_matrix[3][1] = - glm::dot(glm::vec3(m_matrix[0][1], m_matrix[1][1], m_matrix[2][1]), m_pos);
-   m_matrix[3][2] = - glm::dot(zAxis, m_pos);
- }
-
-void Translate :: buildFrustrum()
- { glm::vec3 viewDir(m_matrix[0][2], m_matrix[1][2], m_matrix[2][2]);
-   glm::vec3 rightDir(m_matrix[0][0], m_matrix[1][0], m_matrix[2][0]);
-   glm::vec3 upDir(m_matrix[0][1], m_matrix[1][1], m_matrix[2][1]);
+void Translate :: buildFrustrum(glm::mat4 &matrix)
+ { glm::vec3 viewDir(matrix[0][2], matrix[1][2], matrix[2][2]);
+   glm::vec3 rightDir(matrix[0][0], matrix[1][0], matrix[2][0]);
+   glm::vec3 upDir(matrix[0][1], matrix[1][1], matrix[2][1]);
 
    viewDir *= -1.f;
    glm::vec3 v(viewDir   * mp_dimensions->x);
@@ -196,28 +328,6 @@ void Translate :: buildFrustrum()
    m_frustrum.addPlane(pl);
    pl = Plane(viewDir, m_pos + mp_dimensions->y * viewDir);
    m_frustrum.addPlane(pl);
- }
-
-void Translate :: rotateOrbit(float headingDegrees, float pitchDegrees)
- { glm::quat rot;
-
-   if (headingDegrees != 0.0f)
-    { rot = glm::angleAxis(headingDegrees, glm::vec3(1.f, 0.f, 0.f));
-      m_orientation = rot * m_orientation;
-    }
-   if (pitchDegrees != 0.0f)
-    { rot = glm::angleAxis(pitchDegrees, glm::vec3(0.f, 1.f, 0.f));
-      m_orientation = m_orientation * rot;
-    }
- }
-
-void Translate :: rotate(float headingDegrees, float pitchDegrees, float rollDegrees)
- { pitchDegrees = -pitchDegrees;
-   headingDegrees = -headingDegrees;
-   rollDegrees = -rollDegrees;
-
-   rotateOrbit(headingDegrees, pitchDegrees);
-   m_orientation = glm::normalize(m_orientation);
  }
 
 // ----------------------------------------------------------------------------------------------
@@ -243,7 +353,11 @@ void Control :: linkVar(int def, void* data)
        mp_dist = (float*)data; *mp_dist = 0.0f;
        break;
       case vCAM_TURN:
-       mp_turn = (glm::vec2*)data;
+       mp_turn = (glm::vec3*)data;
+       break;
+      case vCAM_TYPE:
+       mp_type = (int*)data;
+       *mp_type = CAM_ORBIT;
        break;
     }
  }
@@ -258,6 +372,22 @@ void Control :: doUpdate()
    //auto key = (unsigned char)cmp->m_event;
    //Lua::State* vm = cmp->lvm;
 
+ }
+
+void Control :: setType(int tp)
+ { m_unit->lock();
+   *mp_type = tp;
+   m_unit->unlock();
+   if(tp == CAM_FLIGHT) LOG_SPAM("Camera::Control Camera type FLIGHT");
+   else if(tp == CAM_ORBIT) LOG_SPAM("Camera::Control Camera type ORBIT");
+ }
+
+int Control :: getType()
+ { int tp;
+   m_unit->lock();
+   tp = *mp_type;
+   m_unit->unlock();
+   return tp;
  }
 
 void Control :: setDistance(float volume)
@@ -277,7 +407,7 @@ float Control :: getDistance()
 void Control :: rotation(int x, int y)
  { if(m_flag == 1)
     { m_unit->lock();
-      *mp_turn = glm::vec2((float)(x - m_cursor.x), (float)(y - m_cursor.y));
+      *mp_turn = glm::vec3((float)(x - m_cursor.x), (float)(y - m_cursor.y), 0.f);
       m_unit->unlock();
       m_cursor = glm::ivec2(x, y);
     }

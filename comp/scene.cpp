@@ -65,7 +65,7 @@ World :: World(unsigned int pt) : Component(pt)
 
    root.setId(id);
    root.m_box.setPos(glm::vec3(0.f));
-   root.m_box.setScale(glm::vec3(10.f, 10.f, 10.f));
+   root.m_box.setScale(glm::vec3(20.f, 20.f, 20.f));
    root.m_type = NODE_INTERNAL;
    root.imaging();
    

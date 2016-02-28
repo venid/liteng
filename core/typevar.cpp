@@ -138,8 +138,9 @@ std::map<int, std::pair<void*(*)(), void(*)(void*)> > VarTable
   { vCAM_MATRIX,     {setMat4f, delMat4f}},
   { vCAM_DIMENSIONS, {setVec4f, delVec4f}},
   { vCAM_ORBIT_DIST, {setFloat, delFloat}},
-  { vCAM_TURN,       {setVec2f, delVec2f}},
+  { vCAM_TURN,       {setVec3f, delVec3f}},
   { vCAM_CONTROL,    {setInt, delInt}},
+  { vCAM_TYPE,       {setInt, delInt}},
 
   { vTRANSLATE,      {setMat4f, delMat4f}},
   { vOPERATION,      {setOperation, delOperation}},

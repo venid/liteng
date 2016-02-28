@@ -14,7 +14,7 @@ struct Link
 #define MAX_ITERATION 5
 #define CONST_DELTA_TIME 0.05
 
-// ----------------- Типы переменных -------------------
+// --------- Типы переменных --------------
 
 #define vWIN_RECT    0x00000010
 #define vCURSOR      0x00000011
@@ -40,6 +40,7 @@ struct Link
 #define vCAM_ORBIT_DIST 0x00000046
 #define vCAM_TURN       0x00000047
 #define vCAM_CONTROL    0x00000048
+#define vCAM_TYPE       0x00000049
 
 #define vTRANSLATE      0x00000051
 #define vOPERATION      0x00000052

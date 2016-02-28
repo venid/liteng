@@ -186,6 +186,5 @@ void Mouse :: doUpdateWheele()
       fn = (*vm)["EVENTS"][getId()];
       if(fn == Lua::FUN) fn(flag); //, x, y);
       else LOG_WARNING("Event::Mouse: Missing or incorrect value function (%i)", getId());
-      //LOG_SPAM("Event::Mouse: wheel event %i", flag);
     }
  }

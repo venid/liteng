@@ -9,7 +9,7 @@
 
 #define NODE_NOT 0
 #define NODE_INTERNAL 1 //внутренний
-#define NODE_EXTERNAL 2 //внешний
+#define *NODE_EXTERNAL 2 //внешний
 
 class Mesh;
 
