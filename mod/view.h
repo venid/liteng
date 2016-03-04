@@ -23,18 +23,19 @@ class View : public Module
     WINRECT winRect;
 
     bool init(Lua::State &lua);
-    bool msg_processing();
     void set_var();
-    void connect();
     void render();
 
     int init_update(double);
     int run_update(double);
-    int clear_update(double);
 
    public:
     View(const char* Name);
     ~View() {}
+
+    void connectMsg();
+    void clear(Object*, int);
+    void add(Object*, int);
 
     static Object* Create(const char* Name, Lua::State* lua)
      { View *view = new View(Name);

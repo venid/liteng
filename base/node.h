@@ -9,19 +9,22 @@
 
 #define NODE_NOT 0
 #define NODE_INTERNAL 1 //внутренний
-#define *NODE_EXTERNAL 2 //внешний
+#define NODE_EXTERNAL 2 //внешний
 
 class Mesh;
+class Shape;
 
 class Node : public Object
  { public: //private:
     int m_type;
-    OBBox m_box;
+    AABBox m_box;
 
     Node* m_parent;
     std::vector<Node*> m_child;
 
-    Mesh* m_mesh;
+    std::vector<Shape*> m_mesh;
+
+    Mesh* m_frame;
 
    public:
     Node();

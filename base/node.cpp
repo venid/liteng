@@ -7,7 +7,7 @@
 Node :: Node() : Object(), m_box()
  { m_type = NODE_NOT;
    m_parent = nullptr;
-   m_mesh = nullptr;
+   m_frame = nullptr;
  }
 
 bool Node :: add(Node* node, int ID)
@@ -31,17 +31,22 @@ void Node :: imaging()
    sz *= 2.f;
    if(m_type == NODE_EXTERNAL) cl = glm::vec3(0.5f, 1.f, 0.5f);
    else cl = glm::vec3(1.f, 0.5f, 0.5f);
-   m_mesh = Mesh::makeBoxFrame(sz, cl);
+   m_frame = Mesh::makeBoxFrame(sz, cl);
  }
 
 bool Node :: isVisible(Generic** head, MemoryPool<Generic> &pool,
                        glm::mat4 &trans)
- { glm::mat4 tmp = trans * m_box.getTransform();
+ { glm::vec3 pos(m_box.getPos());
+   glm::mat4 tmp = trans;
+
+   tmp[3][0] += pos.x;
+   tmp[3][1] += pos.y;
+   tmp[3][2] += pos.z;
 
    Generic* show = pool.allocate();
    show->transform = tmp;
    show->next = *head;
-   show->mesh = m_mesh;
+   show->mesh = m_frame;
    show->mat = nullptr;
    show->id = getId();
    *head = show;

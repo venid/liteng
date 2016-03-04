@@ -15,10 +15,8 @@ class Factory : public Module
     Lua::State lvm;
     static ResManager *resManager;
 
-    bool msg_processing();
     bool init(Lua::State &lua);
     void set_var();
-    void connect();
 
     int init_update(double);
     int run_update(double);
@@ -33,6 +31,12 @@ class Factory : public Module
    public:
     Factory(const char* Name);
     ~Factory();
+
+    void connectMsg();
+    void clear(Object*, int);
+    void add(Object*, int);
+    void make(Object*, int);
+    void test(Object*, int);
 
     static Object* Create(const char* Name, Lua::State* lua)
      { Factory *fact = new Factory(Name);

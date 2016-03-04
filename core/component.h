@@ -6,6 +6,7 @@
 
 class Unit;
 class Component;
+class Module;
 
 typedef void(Component::* CUpdate)();
 
@@ -41,6 +42,7 @@ class Component : public Object
      { st.reg_object(getName(), this, "Component"); }
 
     virtual bool init()  { return true; }
+    virtual void connect(Module*) {}
     virtual void clear() {}
 
     virtual void linkVar(int def, void* data) {}

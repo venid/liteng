@@ -19,7 +19,11 @@
 #include "imagedecoder.h"
 
 META_METHODS(Factory,
- METHOD(create, Factory::Create))
+ METHOD(create, Factory::Create),
+ METHOD(clear, Factory::clear),
+ METHOD(add, Factory::add),
+ METHOD(make, Factory::make),
+ METHOD(test, Factory::test))
 META_PROPERTY(Factory)
 META_OBJECT(Factory, Factory, &Module::Instance)
 
@@ -39,44 +43,11 @@ Factory :: ~Factory()
 void Factory :: set_var()
  { pool.emplace(vRES_MANAGER, Link{1, setPointer(resManager)}); }
 
-void Factory :: connect()
- { Manager::sendMessage(MSG_CONNECT, this, MSG_TEST_5);
-   Manager::sendMessage(MSG_CONNECT, this, MSG_ADD_UNIT);
-   Manager::sendMessage(MSG_CONNECT, this, MSG_MAKE_UNIT);
- }
-
-bool Factory :: msg_processing()
- { int tMsg, param;
-   Object* pobj;
-
-   while(Manager::getMessage(getNumQueue(), tMsg, pobj, param))
-    { switch(tMsg)
-       { case MSG_ADD_UNIT:
-          if(((Object*)pobj)->release() == false)
-           entity.push_back((Unit*)pobj);
-          else LOG_ERROR("%s: неплановое удаление unit", getName());
-          break;
-         case MSG_MAKE_UNIT:
-          addComp((Unit*)pobj);
-          pobj->release();
-          ////LOG_SPAM("%s: количество ссылок на unit %i", getName(), ((PObject)pobj)getRefCount());
-          Manager::sendMessage(MSG_ADD_UNIT, pobj, 0);
-          LOG_SPAM("%s: Message MSG_MAKE_UNIT", getName());
-          break;
-         case MSG_TEST_5:
-          //entity.erase(std::remove_if(entity.begin(), entity.end(),
-                      //[](Unit* un)->bool {return un->remove();}),
-                      //entity.end());
-          LOG_SPAM("%s: Message MSG_TEST_5", getName());
-          for(auto &it : components)
-           it.second->update();
-          break;
-         case MSG_FINISH:
-          do_update = (MUpdate) &Factory::clear_update;
-          return false;
-       }
-    }
-   return true;
+void Factory :: connectMsg()
+ { addMsg(MSG_FINISH, this, "clear");
+   addMsg(MSG_ADD_UNIT, this, "add");
+   addMsg(MSG_MAKE_UNIT, this, "make");
+   addMsg(MSG_TEST_5, this, "test");
  }
 
 bool Factory :: init(Lua::State &lua)
@@ -148,8 +119,7 @@ int Factory :: init_update(double tm)
  }
 
 int Factory :: run_update(double tm)
- { if(msg_processing())
-    Manager :: sendMessage(MSG_DEACTIVE, nullptr, getNumQueue());
+ { Manager :: sendMessage(MSG_DEACTIVE, nullptr, getNumQueue());
    return 1;
  }
 
@@ -164,6 +134,28 @@ int Factory :: clear_update(double tm)
    LOG_INFO("%s: clear.", getName());
    do_update = &Module::empty_update;
    return 0;
+ }
+
+void Factory :: clear(Object* obj, int param)
+ { do_update = (MUpdate) &Factory::clear_update; }
+
+void Factory :: add(Object* pobj, int param)
+ { if(((Object*)pobj)->release() == false)
+    entity.push_back((Unit*)pobj);
+   else LOG_ERROR("%s: неплановое удаление unit", getName());
+ }
+
+void Factory :: make(Object* pobj, int param)
+ { addComp((Unit*)pobj);
+   pobj->release();
+   Manager::sendMessage(MSG_ADD_UNIT, pobj, 0);
+   LOG_SPAM("%s: Message MSG_MAKE_UNIT", getName());
+ }
+
+void Factory :: test(Object* pobj, int param)
+ { LOG_SPAM("%s: Message MSG_TEST_5", getName());
+   for(auto &it : components)
+    it.second->update();
  }
 
 // --------------------------------------------------------------------------------

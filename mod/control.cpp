@@ -8,7 +8,10 @@
 #include "component.h"
 
 META_METHODS(Control,
- METHOD(create, Control::Create))
+ METHOD(create, Control::Create),
+ METHOD(clear, Control::clear),
+ METHOD(add, Control::add),
+ METHOD(addScript, Control::addScript))
 META_PROPERTY(Control)
 META_OBJECT(Control, Control, &Module::Instance)
 
@@ -30,35 +33,10 @@ bool Control :: init(Lua::State &lua)
 void Control :: set_var()
  { pool.emplace(vLVM, Link{1, setPointer(&lvm)}); }
 
-void Control :: connect()
- { Manager::sendMessage(MSG_CONNECT, this, MSG_ADD_UNIT);
-   Manager::sendMessage(MSG_CONNECT, this, MSG_ADD_SCRIPT);
- }
-
-bool Control :: msg_processing()
- { int tMsg, param;
-   Object* pobj;
-   Data* data;
-
-   while(Manager::getMessage(getNumQueue(), tMsg, pobj, param))
-    { switch(tMsg)
-       { case MSG_ADD_SCRIPT:
-          if(pobj)
-           { data = pobj->stash;
-             lvm.load_data(data);
-             pobj->release();
-           }
-          break;
-         case MSG_ADD_UNIT:
-          addComp((Unit*)pobj);
-          pobj->release();
-          break;
-         case MSG_FINISH:
-          do_update = (MUpdate)&Control::clear_update;
-          return false;
-       }
-    }
-   return true;
+void Control :: connectMsg()
+ { addMsg(MSG_FINISH, this, "clear");
+   addMsg(MSG_ADD_UNIT, this, "add");
+   addMsg(MSG_ADD_SCRIPT, this, "addScript");
  }
 
 int Control :: init_update(double tm)
@@ -78,7 +56,17 @@ int Control :: init_update(double tm)
    return 1;
  }
 
-int Control :: clear_update(double tm)
+int Control :: run_update(double tm)
+ { Keyboard::instance().update();
+   Mousedevice::instance().update();
+
+   for(auto &it : components)
+       it.second->update();
+
+   return 1;
+ }
+
+void Control :: clear(Object* obj, int param)
  { delComp();
    pool[vLVM].refCount --;
    del_var();
@@ -89,18 +77,21 @@ int Control :: clear_update(double tm)
 
    LOG_INFO("%s: clear.", getName());
    do_update = &Module::empty_update;
-   return 0;
  }
 
-int Control :: run_update(double tm)
- { Keyboard::instance().update();
-   Mousedevice::instance().update();
+void Control :: add(Object* pobj, int param)
+ { addComp((Unit*)pobj);
+   pobj->release();
+ }
 
-   if(msg_processing())
-    { for(auto &it : components)
-       it.second->update();
+void Control :: addScript(Object* pobj, int param)
+ { Data* data;
+
+   if(pobj)
+    { data = pobj->stash;
+      lvm.load_data(data);
+      pobj->release();
     }
-   return 1;
  }
 
 int Control :: send_message(luavm vm)

@@ -10,17 +10,18 @@ class Physics : public Module
     double* mp_delta;
 
     bool init(Lua::State &lua);
-    bool msg_processing();
     void set_var();
-    void connect();
 
     int init_update(double);
     int run_update(double);
-    int clear_update(double);
 
    public:
     Physics(const char* Name);
     ~Physics() {}
+
+    void connectMsg();
+    void clear(Object*, int);
+    void add(Object*, int);
 
     static Object* Create(const char* Name, Lua::State* lua)
      { Physics *phys = new Physics(Name);

@@ -3,15 +3,15 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <utility>
 #include "object.h"
-
-#include "log.h"
 
 class Component;
 class Unit;
 class Module;
 
 typedef int(Module::* MUpdate)(double);
+typedef void(Module::* Observer)(Object*, int);
 
 class Module : public Object
  {
@@ -19,9 +19,12 @@ class Module : public Object
     bool action;
     unsigned int thrID;
     unsigned int numQueue;
-   
+
     std::multimap<unsigned int, Component*> components;
     std::vector<Component*> staticComponents;
+
+    std::multimap<unsigned int,
+                  std::pair<Object*, Meta::Method> > msgHandlers;
 
     struct Link
      { int refCount;
@@ -30,9 +33,6 @@ class Module : public Object
     std::map<int, Link> pool;
 
     int (Module::*do_update)(double);
-
-    void connect_base();
-    virtual void connect() { }
 
     static std::vector<Module*> module_tab;
 
@@ -46,10 +46,8 @@ class Module : public Object
     void setNumQueue(unsigned int num) {numQueue = num;}
     unsigned int getNumQueue() {return numQueue;}
 
-    void connectMsg()
-     { connect_base();
-       connect();
-     }
+    virtual void connectMsg() = 0;
+    void addMsg(unsigned int msg, Object* obj, const char* theName);
 
     void addComp(Unit*);
     void delComp();
@@ -57,7 +55,7 @@ class Module : public Object
 
     void del_var();
 
-    int update(double tm) { return (this->*do_update)(tm); }
+    int update(double tm);
     int empty_update(double) { return 0; }
 
     static unsigned int getModuleID(const char* Name);

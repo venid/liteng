@@ -29,8 +29,13 @@ Module :: Module(const char* Name) : Object(Name, Object::genID())
 Module :: ~Module()
  { LOG_INFO("Module: Delete \"%s\"", getName()); }
 
-void Module :: connect_base()
- { Manager::sendMessage(MSG_CONNECT, this, MSG_FINISH); }
+void Module :: addMsg(unsigned int msg, Object* obj, const char* theName)
+ { Meta::Base* base = obj->meta();
+   Meta::Method mt = base->method(base->indexOfMethod(theName));
+   std::pair<Object*, Meta::Method> hdr(obj, mt);
+   msgHandlers.emplace(msg, hdr);
+   Manager::sendMessage(MSG_CONNECT, this, msg);
+ }
 
 void Module :: addComp(Unit* un)
  { int i, def;
@@ -154,4 +159,17 @@ unsigned int Module :: getModuleID(const char* Name)
  { for(auto &it : module_tab)
     if(strcmp(Name, it->getName()) == 0) return it->getId();
    return 0;
+ }
+
+int Module :: update(double tm)
+ { int tMsg, param;
+   Object* pobj;
+
+   while(Manager::getMessage(getNumQueue(), tMsg, pobj, param))
+    { auto ret = msgHandlers.equal_range(tMsg);
+      if(ret.first != msgHandlers.end())
+       for(auto it = ret.first; it != ret.second; ++it)
+        it->second.second.invoke(it->second.first, {pobj, param});
+    }
+   return (this->*do_update)(tm);
  }

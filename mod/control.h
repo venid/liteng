@@ -10,20 +10,22 @@ class Control : public Module
     Lua::State lvm;
     Display *m_dpy;
 
-    bool msg_processing();
     bool init(Lua::State &lua);
     void set_var();
-    void connect();
 
     int init_update(double);
     int run_update(double);
-    int clear_update(double);
 
     static int send_message(luavm vm);
 
    public:
     Control(const char* Name);
     ~Control();
+
+    void connectMsg();
+    void clear(Object*, int);
+    void add(Object*, int);
+    void addScript(Object*, int);
 
     static Object* Create(const char* Name, Lua::State* lua)
      { Control *control = new Control(Name);

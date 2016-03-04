@@ -17,7 +17,9 @@
 #include "shader.h"
 
 META_METHODS(View,
- METHOD(create, View::Create))
+ METHOD(create, View::Create),
+ METHOD(clear, View::clear),
+ METHOD(add, View::add))
 META_PROPERTY(View)
 META_OBJECT(View, View, &Module::Instance)
 
@@ -32,33 +34,12 @@ View :: View(const char* Name) : Module(Name), winRect{400, 300, 0, 0}
    metaClass = &Instance;
  }
 
-bool View :: msg_processing()
- { int tMsg, param;
-   Object* pobj;
-
-   while(Manager::getMessage(getNumQueue(), tMsg, pobj, param))
-    { switch(tMsg)
-       { case MSG_FINISH:
-          do_update = (MUpdate) &View::clear_update;
-          return false;
-         case MSG_TEST_1:
-          LOG_SPAM("%s: Received a message MSG_TEST_1 (param %i)", getName(), param);
-          break;
-         case MSG_ADD_UNIT:
-          addComp((Unit*)pobj);
-          pobj->release();
-          break;
-       }
-    }
-   return true;
- }
-
 void View :: set_var()
  { pool.emplace(vWIN_RECT, Link{1, setVec2i(winRect.width, winRect.height)}); }
 
-void View :: connect()
- { Manager::sendMessage(MSG_CONNECT, this, MSG_TEST_1);
-   Manager::sendMessage(MSG_CONNECT, this, MSG_ADD_UNIT);
+void View :: connectMsg()
+ { addMsg(MSG_FINISH, this, "clear");
+   addMsg(MSG_ADD_UNIT, this, "add");
  }
 
 bool View :: init(Lua::State &lua)
@@ -255,11 +236,11 @@ int View :: run_update(double tm)
       }
     }
 
-   if(msg_processing()) render();
+   render();
    return 1;
  }
 
-int View :: clear_update(double tm)
+void View :: clear(Object* obj, int param)
  { delComp();
    pool[vWIN_RECT].refCount --;
    del_var();
@@ -272,5 +253,9 @@ int View :: clear_update(double tm)
    XCloseDisplay(dpy);
    LOG_INFO("%s: clear.", getName());
    do_update = &Module::empty_update;
-   return 0;
+ }
+
+void View :: add(Object* pobj, int param)
+ { addComp((Unit*)pobj);
+   pobj->release();
  }
