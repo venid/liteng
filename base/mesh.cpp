@@ -424,46 +424,46 @@ Mesh* Mesh :: makeBox(float x, float y, float z)
    return ms;
  }
 
-Mesh* Mesh :: makeBoxFrame(glm::vec3& sz, glm::vec3& color)
+Mesh* Mesh :: makeBoxFrame(glm::vec3& sz)
  {  Mesh* ms = new Mesh();
     Vertex* vrt = new Vertex[24];
     glm::vec3 hsz = sz * 0.5f;
 
-    vrt[0].pos = glm::vec3(-hsz.x, -hsz.y, -hsz.z); vrt[0].color = glm::vec4(color, 1.f);
-    vrt[1].pos = glm::vec3(-hsz.x, hsz.y, -hsz.z); vrt[1].color = glm::vec4(color, 1.f);
+    vrt[0].pos = glm::vec3(-hsz.x, -hsz.y, -hsz.z);
+    vrt[1].pos = glm::vec3(-hsz.x, hsz.y, -hsz.z);
 
-    vrt[2].pos = glm::vec3(hsz.x, -hsz.y, -hsz.z); vrt[2].color = glm::vec4(color, 1.f);
-    vrt[3].pos = glm::vec3(hsz.x, hsz.y, -hsz.z); vrt[3].color = glm::vec4(color, 1.f);
+    vrt[2].pos = glm::vec3(hsz.x, -hsz.y, -hsz.z);
+    vrt[3].pos = glm::vec3(hsz.x, hsz.y, -hsz.z);
 
-    vrt[4].pos = glm::vec3(-hsz.x, -hsz.y, hsz.z); vrt[4].color = glm::vec4(color, 1.f);
-    vrt[5].pos = glm::vec3(-hsz.x, hsz.y, hsz.z); vrt[5].color = glm::vec4(color, 1.f);
+    vrt[4].pos = glm::vec3(-hsz.x, -hsz.y, hsz.z);
+    vrt[5].pos = glm::vec3(-hsz.x, hsz.y, hsz.z);
 
-    vrt[6].pos = glm::vec3(hsz.x, -hsz.y, hsz.z); vrt[6].color = glm::vec4(color, 1.f);
-    vrt[7].pos = glm::vec3(hsz.x, hsz.y, hsz.z); vrt[7].color = glm::vec4(color, 1.f);
+    vrt[6].pos = glm::vec3(hsz.x, -hsz.y, hsz.z);
+    vrt[7].pos = glm::vec3(hsz.x, hsz.y, hsz.z);
 
-    vrt[8].pos = glm::vec3(-hsz.x, -hsz.y, -hsz.z); vrt[8].color = glm::vec4(color, 1.f);
-    vrt[9].pos = glm::vec3(hsz.x, -hsz.y, -hsz.z); vrt[9].color = glm::vec4(color, 1.f);
+    vrt[8].pos = glm::vec3(-hsz.x, -hsz.y, -hsz.z);
+    vrt[9].pos = glm::vec3(hsz.x, -hsz.y, -hsz.z);
 
-    vrt[10].pos = glm::vec3(hsz.x, -hsz.y, -hsz.z); vrt[10].color = glm::vec4(color, 1.f);
-    vrt[11].pos = glm::vec3(hsz.x, -hsz.y, hsz.z); vrt[11].color = glm::vec4(color, 1.f);
+    vrt[10].pos = glm::vec3(hsz.x, -hsz.y, -hsz.z);
+    vrt[11].pos = glm::vec3(hsz.x, -hsz.y, hsz.z);
 
-    vrt[12].pos = glm::vec3(hsz.x, -hsz.y, hsz.z); vrt[12].color = glm::vec4(color, 1.f);
-    vrt[13].pos = glm::vec3(-hsz.x, -hsz.y, hsz.z); vrt[13].color = glm::vec4(color, 1.f);
+    vrt[12].pos = glm::vec3(hsz.x, -hsz.y, hsz.z);
+    vrt[13].pos = glm::vec3(-hsz.x, -hsz.y, hsz.z);
 
-    vrt[14].pos = glm::vec3(-hsz.x, -hsz.y, hsz.z); vrt[14].color = glm::vec4(color, 1.f);
-    vrt[15].pos = glm::vec3(-hsz.x, -hsz.y, -hsz.z); vrt[15].color = glm::vec4(color, 1.f);
+    vrt[14].pos = glm::vec3(-hsz.x, -hsz.y, hsz.z);
+    vrt[15].pos = glm::vec3(-hsz.x, -hsz.y, -hsz.z);
 
-    vrt[16].pos = glm::vec3(-hsz.x, hsz.y, -hsz.z); vrt[16].color = glm::vec4(color, 1.f);
-    vrt[17].pos = glm::vec3(hsz.x, hsz.y, -hsz.z); vrt[17].color = glm::vec4(color, 1.f);
+    vrt[16].pos = glm::vec3(-hsz.x, hsz.y, -hsz.z);
+    vrt[17].pos = glm::vec3(hsz.x, hsz.y, -hsz.z);
 
-    vrt[18].pos = glm::vec3(hsz.x, hsz.y, -hsz.z); vrt[18].color = glm::vec4(color, 1.f);
-    vrt[19].pos = glm::vec3(hsz.x, hsz.y, hsz.z); vrt[19].color = glm::vec4(color, 1.f);
+    vrt[18].pos = glm::vec3(hsz.x, hsz.y, -hsz.z);
+    vrt[19].pos = glm::vec3(hsz.x, hsz.y, hsz.z);
 
-    vrt[20].pos = glm::vec3(hsz.x, hsz.y, hsz.z); vrt[20].color = glm::vec4(color, 1.f);
-    vrt[21].pos = glm::vec3(-hsz.x, hsz.y, hsz.z); vrt[21].color = glm::vec4(color, 1.f);
+    vrt[20].pos = glm::vec3(hsz.x, hsz.y, hsz.z);
+    vrt[21].pos = glm::vec3(-hsz.x, hsz.y, hsz.z);
 
-    vrt[22].pos = glm::vec3(-hsz.x, hsz.y, hsz.z); vrt[22].color = glm::vec4(color, 1.f);
-    vrt[23].pos = glm::vec3(-hsz.x, hsz.y, -hsz.z); vrt[23].color = glm::vec4(color, 1.f);
+    vrt[22].pos = glm::vec3(-hsz.x, hsz.y, hsz.z);
+    vrt[23].pos = glm::vec3(-hsz.x, hsz.y, -hsz.z);
 
     ms->setVertex(vrt, 24, GL_LINES);
     return ms;

@@ -23,4 +23,7 @@
 #define MSG_ADD_SCRIPT    0x00000040
 #define MSG_RUN_SCRIPT    0x00000041
 
+#define MSG_ADD_NODE      0x00000051
+#define MSG_DEL_NODE      0x00000052
+
 #endif // DEFS_H_INCLUDED

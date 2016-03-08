@@ -13,6 +13,7 @@
 
 class Mesh;
 class Shape;
+class Frustrum;
 
 class Node : public Object
  { public: //private:
@@ -22,17 +23,13 @@ class Node : public Object
     Node* m_parent;
     std::vector<Node*> m_child;
 
-    std::vector<Shape*> m_mesh;
-
-    Mesh* m_frame;
+    std::vector<Shape*> m_shape;
 
    public:
     Node();
 
     bool add(Node* node, int ID);
 
-    bool isVisible(Generic** head, MemoryPool<Generic> &pool,
-                   glm::mat4 &trans);
+    bool isVisible(Frustrum &frustrum, glm::mat4 &trans);
 
-    void imaging();
  };

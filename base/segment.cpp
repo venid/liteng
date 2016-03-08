@@ -37,14 +37,3 @@ void Segment :: update()
 void Segment :: addShape(Shape* shape)
  { m_shape.push_back(shape); }
 
-int Segment :: isVisible(Generic** head, MemoryPool<Generic> &pool,
-                         Frustrum &frustrum, glm::mat4 &trans)
- { int res = 0;
-   glm::mat4 tmp = trans * m_trans;
-
-   for(auto it : m_shape)
-    res += it->isVisible(head, pool, frustrum, tmp);
-
-   return res;
- }
-

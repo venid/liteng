@@ -4,6 +4,7 @@
 #include "component.h"
 #include "vertex.h"
 #include "MemoryPool.h"
+#include "fbuffer.h"
 
 namespace Lua { class Var; }
 namespace Scene { class Render; }
@@ -11,9 +12,20 @@ namespace Camera { class Render; class Translate; }
 namespace Scene { class World; }
 
 class Shader;
+class Mesh;
+class Material;
+class Node;
 
 namespace Render
 {
+
+struct Generic
+ { unsigned int id;
+   Mesh *mesh;
+   Material *mat;
+   glm::mat4 transform;
+   Generic *next;
+ };
 
 // ------------------------------------------------------
 
@@ -23,8 +35,11 @@ class Lists : public Component
 
     Camera::Translate** mpp_camera;
 
-    Generic **mp_render;
-    MemoryPool<Generic> pool;
+    Generic **mpp_render;
+    Generic *mp_render;
+    MemoryPool<Generic> m_pool;
+
+    void createList(Node* node, glm::mat4 &trans);
 
    public:
     Lists(unsigned int pt);
@@ -70,36 +85,38 @@ class Update : public Component
 
 // -------------------------------------------------------
 
-class ListDraw : public Component
- { private:
-    std::vector<Scene::Render*> *mp_scenes;
+//class ListDraw : public Component
+ //{ private:
+    //std::vector<Scene::Render*> *mp_scenes;
 
-    Camera::Render** mpp_camera;
+    //Camera::Render** mpp_camera;
 
-    Generic **mp_show;
-    MemoryPool<Generic> pool;
+    //Generic **mp_show;
+    //MemoryPool<Generic> pool;
 
-   public:
-    ListDraw(unsigned int pt);
-    ~ListDraw() {}
+   //public:
+    //ListDraw(unsigned int pt);
+    //~ListDraw() {}
 
-    void linkVar(int def, void* data);
+    //void linkVar(int def, void* data);
 
-    void doUpdate();
+    //void doUpdate();
 
-    static Object* Create(Lua::Var* tab, unsigned int m_p)
-     {return new ListDraw(m_p);}
+    //static Object* Create(Lua::Var* tab, unsigned int m_p)
+     //{return new ListDraw(m_p);}
 
-    static int public_tab[];
-    static int privat_tab[];
-    static Meta::Base Instance;
- };
+    //static int public_tab[];
+    //static int privat_tab[];
+    //static Meta::Base Instance;
+ //};
 
 // ----------------------------------------------------
 
 class Geometry : public Component
  { private:
     Shader *m_shader;
+
+    FrameBuffer m_fbo;
 
     Camera::Render** mpp_camera;
 

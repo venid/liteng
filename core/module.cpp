@@ -64,6 +64,7 @@ void Module :: addComp(Unit* un)
        { it->init();
          it->retain();
          components.emplace(it->getPoint(), it);
+         it->connect(this);
          LOG_DEBUG("%s: Add component id %i", getName(), it->getId());
        }
       else

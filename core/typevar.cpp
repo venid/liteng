@@ -36,13 +36,6 @@ void  delMat4f(void* vr) { delete (glm::mat4*)vr; }
 void* setQuat() { return new glm::quat(1.f, 0.f, 0.f, 0.f); }
 void  delQuat(void* vr) { delete (glm::quat*)vr; }
 
-void* setGeneric()
- { Generic** pv = new Generic*;
-   *pv = nullptr;
-   return pv;
- }
-void  delGeneric(void* vr) { delete (Generic**)vr; }
-
 void* setLua() { return new Lua::State(); }
 void  delLua(void* vr) { delete (Lua::State*)vr; }
 
@@ -124,8 +117,9 @@ std::map<int, std::pair<void*(*)(), void(*)(void*)> > VarTable
   { vPROGRAM,        {setPointer, delPointer}},
   { vRES_MANAGER,    VAR(void*)},
 
-  { vLIST_DRAW,      {setGeneric, delGeneric}},
-  { vLIST_RENDER,    {setGeneric, delGeneric}},
+  { vLIST_DRAW,      VAR(void*)},
+  { vLIST_RENDER,    VAR(void*)},
+  { vLIST_BORDER,    VAR(void*)},
 
   { vWORLD,          {setPointer, delPointer}},
   { vVECTOR_SEGMENT, VEC(Object*)},

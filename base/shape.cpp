@@ -69,23 +69,13 @@ void Shape :: setPos(const glm::vec3 &pos)
    m_trans[3][2] = pos.z;
  }
 
-int Shape :: isVisible(Generic** head, MemoryPool<Generic> &pool,
-                       Frustrum &frustrum, glm::mat4 &trans)
+bool Shape :: isVisible(Frustrum &frustrum, glm::mat4 &trans)
  { if(m_visible)
     { OBBox box(bounding);
       glm::mat4 tmp = m_trans * trans;
 
       box.move(tmp);
-      if(box.intersects(frustrum))
-       { Generic* show = pool.allocate();
-         show->transform = tmp;
-         show->next = *head;
-         show->mesh = m_mesh;
-         show->mat = m_material;
-         show->id = getId();
-         *head = show;
-         return 1;
-       }
+      return box.intersects(frustrum);
     }
-   return 0;
+   return false;
  }

@@ -11,7 +11,6 @@ class Unit;
 class Module;
 
 typedef int(Module::* MUpdate)(double);
-typedef void(Module::* Observer)(Object*, int);
 
 class Module : public Object
  {

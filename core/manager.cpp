@@ -65,6 +65,11 @@ void Manager :: reg_message(unsigned int MsgId, unsigned int NumQueue)
    if(it == ret.second) msgMan->msgTab.emplace(MsgId, NumQueue);
   }
 
+void del_message(unsigned int MsgId, unsigned int NumQueue)
+ { 
+ 
+ }
+
 bool Manager :: handlerMsg(int msg, Object* item, int param)
  { switch(msg)
     { case MSG_DEACTIVE:
@@ -89,6 +94,9 @@ bool Manager :: handlerMsg(int msg, Object* item, int param)
        if(item->isSuperClass(Module::Instance))
         reg_message((unsigned int)param, ((Module*)item)->getNumQueue());
        else LOG_ERROR("Manager: Invalid parameter in the message MSG_CONNECT.");
+       return false;
+      case MSG_DECONNECT:
+
        return false;
     }
    return true;

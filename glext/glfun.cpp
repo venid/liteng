@@ -102,6 +102,8 @@ bool InitGL()
    OPENGL_GET_PROC(PFNGLFRAMEBUFFERTEXTUREPROC, glFramebufferTexture);
    OPENGL_GET_PROC(PFNGLFRAMEBUFFERRENDERBUFFERPROC, glFramebufferRenderbuffer);
    OPENGL_GET_PROC(PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC, glGetFramebufferAttachmentParameteriv);
+   //mipmap
+   OPENGL_GET_PROC(PFNGLGENERATEMIPMAPPROC, glGenerateMipmap);
 
    return true;
  }
@@ -322,7 +324,7 @@ PFNGLFRAMEBUFFERTEXTURE2DPROC        glFramebufferTexture2D   = nullptr;
 PFNGLFRAMEBUFFERTEXTURE3DPROC        glFramebufferTexture3D = nullptr;
 PFNGLFRAMEBUFFERRENDERBUFFERPROC     glFramebufferRenderbuffer = nullptr;
 PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC glGetFramebufferAttachmentParameteriv = nullptr;
-// PFNGLGENERATEMIPMAPPROC              glGenerateMipmap = nullptr;
+PFNGLGENERATEMIPMAPPROC              glGenerateMipmap = nullptr;
 // PFNGLBLITFRAMEBUFFERPROC             glBlitFramebuffer = nullptr;
 // PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC glRenderbufferStorageMultisample = nullptr;
 // PFNGLFRAMEBUFFERTEXTURELAYERPROC     glFramebufferTextureLayer = nullptr;

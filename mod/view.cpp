@@ -9,6 +9,7 @@
 #include "input.h"
 #include "component.h"
 #include "glfun.h"
+#include "fbuffer.h"
 
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
@@ -174,6 +175,7 @@ int View :: init_update(double tm)
    LOG_INFO("OpenGL: Vendor %s", glGetString(GL_VENDOR));
    LOG_INFO("OpenGL: Renderer %s", glGetString(GL_RENDERER));
    LOG_INFO("OpenGL: Version %s", glGetString(GL_VERSION));
+
    LOG_DEBUG("OpenGL: max VertexUniformComponents %i", Shader::maxVertexUniformComponents());
    LOG_DEBUG("OpenGL: max VertexAttribs %i", Shader::maxVertexAttribs());
    LOG_DEBUG("OpenGL: max FragmentTextureUnits %i", Shader::maxFragmentTextureUnits());
@@ -182,6 +184,9 @@ int View :: init_update(double tm)
    LOG_DEBUG("OpenGL: max VaryingFloats %i", Shader::maxVaryingFloats());
    LOG_DEBUG("OpenGL: max FragmentUniformComponents %i", Shader::maxFragmentUniformComponents());
    LOG_DEBUG("OpenGL: max TextureCoords %i", Shader::maxTextureCoords());
+
+   LOG_DEBUG("OpenGL: max color buffer attach in FrameBuffer %i", FrameBuffer::maxColorAttached());
+   LOG_DEBUG("OpenGL: max size FrameBuffer %i", FrameBuffer::maxSize());
 
    glClearColor ( 0.05, 0.05, 0.05, 1 );
    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);

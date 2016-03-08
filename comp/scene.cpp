@@ -5,6 +5,8 @@
 #include "luastate.h"
 #include "resmanager.h"
 #include "bounding.h"
+#include "module.h"
+#include "defs.h"
 #include <glm/gtc/constants.hpp>
 
 #include "segment.h"
@@ -15,7 +17,8 @@
 using namespace Scene;
 
 META_METHODS(World,
- METHOD(create, World::Create))
+ METHOD(create, World::Create),
+ METHOD(addNode, World::addNode))
 META_PROPERTY(World)
 META_OBJECT(World, Scene::World, &Component::Instance)
 
@@ -63,19 +66,26 @@ World :: World(unsigned int pt) : Component(pt)
    public_var = World::public_tab;
    metaClass = &Instance;
 
+   Mesh* mesh = Mesh::makeBox(1.f, 1.f, 1.f);
+   Material *mt = new Material("mater");
+   glm::vec4 dif(0.7f, 0.7f, 0.7f, 1.f);
+   mt->setDiffuse(dif);
+
    root.setId(id);
    root.m_box.setPos(glm::vec3(0.f));
    root.m_box.setScale(glm::vec3(20.f, 20.f, 20.f));
    root.m_type = NODE_INTERNAL;
-   root.imaging();
    
    int num = root.getId();
    Node* tmp = new Node();
    tmp->setId(Object::genID());
    tmp->m_box.setPos(glm::vec3(0.0f, -5.f, 0.f));
    tmp->m_box.setScale(glm::vec3(7.0f, 3.f, 7.f));
+   Shape *shp = new Shape("tst");
+   shp->setMesh(mesh);
+   shp->setMaterial(mt);
+   tmp->m_shape.push_back(shp);
    tmp->m_type = NODE_EXTERNAL;
-   tmp->imaging();
    root.add(tmp, num);
 
    int num2 = tmp->getId();
@@ -84,7 +94,6 @@ World :: World(unsigned int pt) : Component(pt)
    tmp->m_box.setPos(glm::vec3(1.f, 0.f, 0.f));
    tmp->m_box.setScale(glm::vec3(5.f, 2.5f, 6.f));
    tmp->m_type = NODE_INTERNAL;
-   tmp->imaging();
    root.add(tmp, num2);
    
    tmp = new Node();
@@ -92,7 +101,12 @@ World :: World(unsigned int pt) : Component(pt)
    tmp->m_box.setPos(glm::vec3(5.f, 4.f, 0.f));
    tmp->m_box.setScale(glm::vec3(3.f, 3.f, 3.f));
    tmp->m_type = NODE_EXTERNAL;
-   tmp->imaging();
+
+   shp = new Shape("tst1");
+   shp->setMesh(mesh);
+   shp->setMaterial(mt);
+   tmp->m_shape.push_back(shp);
+
    root.add(tmp, num);
 
    tmp = new Node();
@@ -100,7 +114,12 @@ World :: World(unsigned int pt) : Component(pt)
    tmp->m_box.setPos(glm::vec3(-2.f, 5.f, 0.f));
    tmp->m_box.setScale(glm::vec3(3.f, 1.f, 8.f));
    tmp->m_type = NODE_EXTERNAL;
-   tmp->imaging();
+
+   shp = new Shape("tst2");
+   shp->setMesh(mesh);
+   shp->setMaterial(mt);
+   tmp->m_shape.push_back(shp);
+
    root.add(tmp, num);
  }
 
@@ -114,14 +133,16 @@ void World :: linkVar(int def, void* data)
     }
  }
 
+void World :: connect(Module* module)
+ { module->addMsg(MSG_ADD_NODE, this, "addNode"); }
+
+void World ::addNode(Object*, int)
+ { LOG_SPAM("Scene::World message MSG_ADD_NODE");
+ 
+ }
+
 void World :: doUpdate()
  { }
-
-void World :: createList(Generic** head, MemoryPool<Generic> &pool)
- { glm::mat4 tmp(1.f);
-  
-   root.isVisible(head, pool, tmp);
- }
 
 // ------------------------------------------------------------------
 
@@ -181,18 +202,18 @@ void Render :: clear()
    mp_scenes->erase(itr);
  }
 
-int Render :: isVisible(Generic** head, MemoryPool<Generic> &pool,
-                        Frustrum &frustrum, glm::mat4 &trans)
- { int res = 0;
-   glm::mat4 tmp = trans * m_trans;
+//int Render :: isVisible(Generic** head, MemoryPool<Generic> &pool,
+                        //Frustrum &frustrum, glm::mat4 &trans)
+ //{ int res = 0;
+   //glm::mat4 tmp = trans * m_trans;
 
-   m_unit->lock();
-   for(auto it = mp_segment->begin(); it != mp_segment->end(); it++)
-    res += (*it)->isVisible(head, pool, frustrum, tmp);
-   m_unit->unlock();
+   //m_unit->lock();
+   //for(auto it = mp_segment->begin(); it != mp_segment->end(); it++)
+    //res += (*it)->isVisible(head, pool, frustrum, tmp);
+   //m_unit->unlock();
 
-   return res;
- }
+   //return res;
+ //}
 
 // ---------------------------------------------------------------
 

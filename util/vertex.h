@@ -55,12 +55,3 @@ struct packFace
 inline const GLubyte *BUFFER_OFFSET(size_t bytes)
 { return reinterpret_cast<const GLubyte *>(0) + bytes; }
 
-class Mesh;
-class Material;
-struct Generic
- { unsigned int id;
-   Mesh *mesh;
-   Material *mat;
-   glm::mat4 transform;
-   Generic *next;
- };

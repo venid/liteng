@@ -17,6 +17,7 @@ namespace Lua { class Var; }
 class Segment;
 class ResManager;
 class Frustrum;
+class Module;
 
 namespace Scene
 {
@@ -30,12 +31,16 @@ class World : public Component
 
     void linkVar(int def, void* data);
 
+    void connect(Module*);
+
+    void addNode(Object*, int);
+
     void doUpdate();
 
     static Object* Create(Lua::Var* tab, unsigned int m_p)
      {return new World(m_p);}
 
-    void createList(Generic** head, MemoryPool<Generic> &pool);
+    Node* getNode() { return &root; }
 
     static int public_tab[];
     static Meta::Base Instance;
@@ -65,8 +70,8 @@ class Render : public Component
     static Object* Create(Lua::Var* tab, unsigned int m_p)
      {return new Render(m_p);}
 
-    int isVisible(Generic** head, MemoryPool<Generic> &pool,
-                      Frustrum &frustrum, glm::mat4 &trans);
+   // int isVisible(Generic** head, MemoryPool<Generic> &pool,
+   //                   Frustrum &frustrum, glm::mat4 &trans);
 
     static int privat_tab[];
     static int public_tab[];

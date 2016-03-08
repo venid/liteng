@@ -26,9 +26,5 @@ class Segment : public Object
 
     void addShape(Shape* shape);
 
-    int isVisible(Generic** head, MemoryPool<Generic> &pool,
-                      Frustrum &frustrum, glm::mat4 &trans);
-
     static Meta::Base Instance;
-
  };

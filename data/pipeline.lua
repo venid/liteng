@@ -19,12 +19,18 @@ do
   { name = "render_pipeline",
     { comp = "Render::Lists", module = "Physics", point = 10 },
     { comp = "Render::Update", module = "View", point = 3 },
-  --  { comp = "Render::ListDraw", module = "View", point = 3 },
-    { comp = "Render::Geometry", module = "View", point = 4, program = Load("frame.sh") },
+    { comp = "Render::Geometry", module = "View", point = 4 },
   --  { comp = "Render::Lighting", module = "View", point = 5 },
   --  { comp = "Render::Compound", module = "View", point = 6 },
-    { comp = "Render::EnvDraw", module = "View", point = 7, program = Load("env.sh") },
- --   { comp = "Render::IntDraw", module = "View", point = 8 }
+    { comp = "Render::EnvDraw", module = "View", point = 7, program = Load("env.sh") }
+  }
+ tmp = Unit(param);
+ Message(0x00000030, 0, tmp);
+
+ param =
+  { name = "gui_pipeline",
+    { comp = "Interface::Lists", module = "Physics", point = 10 },
+    { comp = "Interface::Border", module = "View", point = 4, program = Load("border.sh") }
   }
  tmp = Unit(param);
  Message(0x00000030, 0, tmp);

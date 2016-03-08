@@ -4,7 +4,6 @@
 #include "object.h"
 #include <glm/glm.hpp>
 #include "vertex.h"
-#include "MemoryPool.h"
 #include "bounding.h"
 
 
@@ -34,10 +33,12 @@ class Shape : public Object
     void setMesh(Mesh* mesh);
     void setVisible(bool param) { m_visible = param; }
 
+    Mesh* getMesh()         { return m_mesh; }
+    Material* getMaterial() { return m_material; }
+
     void setPos(const glm::vec3 &pos);
 
-    int isVisible(Generic** head, MemoryPool<Generic> &pool,
-                      Frustrum &frustrum, glm::mat4 &trans);
+    bool isVisible(Frustrum &frustrum, glm::mat4 &trans);
 
     static Meta::Base Instance;
  };
