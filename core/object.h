@@ -15,7 +15,7 @@ class Object
   protected:
    char *name;
    std::atomic_uint id;
-   int ref_count;
+   std::atomic_int  ref_count;
    std::atomic_flag atf;
    Meta::Base *metaClass;
 
@@ -35,7 +35,7 @@ class Object
    void setId(unsigned int newId)
     { id.store(newId, std::memory_order_relaxed); }
 
-   Meta::Base* meta() { return metaClass; }
+   inline Meta::Base* meta() const { return metaClass; }
 
    const char* getClassName() const
     { return metaClass->getName(); }
@@ -53,11 +53,11 @@ class Object
                            const char *methodName,
                            std::initializer_list<Meta::Any> args);
 
-   bool isMethod(const char *Name)
+   bool isMethod(const char *Name) const
     { if(metaClass->indexOfMethod(Name) == -1) return false;
       else return true;
     }
-   bool isProperty(const char *Name)
+   bool isProperty(const char *Name) const
      { if(metaClass->indexOfProperty(Name) == -1) return false;
       else return true;
     }
@@ -65,12 +65,15 @@ class Object
    void lock() { while(atf.test_and_set()){} }
    void unlock() { atf.clear(); }
 
-   Object* retain();
+   inline Object* retain()
+    { ref_count ++;
+      return this;
+    }
    bool release();
    bool remove();
 
    inline int getRefCount() const
-    { return ref_count; }
+    { return ref_count.load(std::memory_order_relaxed); }
 
    static Meta::Base Instance;
    static unsigned int genID();

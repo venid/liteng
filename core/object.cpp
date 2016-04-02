@@ -8,20 +8,17 @@ META_OBJECT(Object, Object, nullptr)
 
 std::atomic<unsigned int> volumeID(1);
 
-Object :: Object() : atf(ATOMIC_FLAG_INIT)
+Object :: Object() : atf(ATOMIC_FLAG_INIT), id(0), ref_count(1), metaClass(&Instance)
  { name = nullptr;
-   id = 0;
-   ref_count = 1;
-   metaClass = &Instance;
    LOG_DEBUG("Object: The object created by the default constructor");
  }
 
-Object :: Object(const char* theName, unsigned int theId) : atf(ATOMIC_FLAG_INIT)
+Object :: Object(const char* theName, unsigned int theId) : atf(ATOMIC_FLAG_INIT),
+                                                            id(theId),
+                                                            ref_count(1),
+                                                            metaClass(&Instance)
  { name = (char*)malloc(strlen(theName)+1);
    strcpy(name, theName);
-   id = theId;
-   ref_count = 1;
-   metaClass = &Instance;
    LOG_DEBUG("Object: The object is created with id %i", theId);
  }
 
@@ -52,40 +49,24 @@ Meta::Any Object :: invoke(const char *className,
    return mt.invoke(nullptr, args.size(), args.begin());
  }
 
-Object* Object :: retain()
- { while(atf.test_and_set()){}
-   ref_count ++;
-   LOG_DEBUG("%s: ++ reference count id - %i (%i)", getClassName(), getId(), ref_count);
-   atf.clear();
-   return this;
- }
-
 bool Object :: release()
- { bool tmp = false;
+ { int count = ref_count --;
 
-   while(atf.test_and_set()){}
-   ref_count --;
-   LOG_DEBUG("%s: -- reference count id - %i (%i)", getClassName(), getId(), ref_count);
-   if(ref_count <= 0) tmp = true;
-   atf.clear();
-   if(tmp)
+   if(count <= 0)
     { LOG_DEBUG("%s: Release destructor id - %i", getClassName(), getId());
       delete this;
+      return true;
     }
-   return tmp;
+   return false;
  }
 
 bool Object :: remove()
- { bool tmp = false;
-
-   while(atf.test_and_set()){}
-   if(ref_count < 2) tmp = true;
-   atf.clear();
-   if(tmp)
+ { if(getRefCount() < 2)
     { LOG_DEBUG("%s: Remove destructor id - %i", getClassName(), getId());
       delete this;
+      return true;
     }
-   return tmp;
+   return false;
  }
 
 unsigned int Object :: genID()
