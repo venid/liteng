@@ -67,8 +67,8 @@ void Data :: add(void *ptr, unsigned int len)
    length += len;
  }
 
-bool Data :: setDataFromFile(const char *fileName, bool bit)
- { FILE *file = bit ? fopen(fileName, "wb") : fopen(fileName, "w");
+bool Data :: DataInFile(const char *fileName)
+ { FILE *file = fopen(fileName, "wb");
    if(file == nullptr) return false;
    unsigned int n = fwrite(bits, 1, length, file);
    if(n != length)
@@ -79,7 +79,7 @@ bool Data :: setDataFromFile(const char *fileName, bool bit)
    return true;
  }
 
-Data* Data :: getDataFromFile(const char *fileName)
+Data* Data :: DataFromFile(const char *fileName)
  { struct stat fs;
 
    if(stat(fileName, &fs) == -1) return nullptr;

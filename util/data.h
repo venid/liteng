@@ -94,9 +94,9 @@ class Data
     void add(const char* str);
     void add(void *ptr, unsigned int len);
 
-    bool setDataFromFile(const char *fileName, bool bit = true);
+    bool DataInFile(const char *fileName);
 
-    static Data* getDataFromFile(const char *fileName);
+    static Data* DataFromFile(const char *fileName);
  };
 
 #endif // _DATA_H_

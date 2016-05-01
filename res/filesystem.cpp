@@ -7,11 +7,11 @@ FileSystem :: FileSystem(const std::string& thePath) : Resource(), path(thePath)
 
 Data* FileSystem :: getFile(const std::string& theName)
  { std::string fileName = path + theName;
-   Data *dt = Data :: getDataFromFile(fileName.c_str());
+   Data *dt = Data :: DataFromFile(fileName.c_str());
    return dt;
  }
 
 bool FileSystem :: saveFile(const std::string& theName, Data *data)
  { std::string fileName = path + theName;
-   return data -> setDataFromFile(fileName.c_str());
+   return data -> DataInFile(fileName.c_str());
  }
