@@ -88,7 +88,7 @@ void Control :: addScript(Object* pobj, int param)
  { Data* data;
 
    if(pobj)
-    { data = pobj->stash;
+    { data = (Data*)pobj;
       lvm.load_data(data);
       pobj->release();
     }

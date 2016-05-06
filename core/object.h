@@ -20,8 +20,6 @@ class Object
    Meta::Base *metaClass;
 
   public:
-   Any stash;
-
    Object();
    Object(const char* theName, unsigned int theId = 0);
    virtual ~Object();
@@ -79,3 +77,16 @@ class Object
    static unsigned int genID();
  };
 
+template <typename Type>
+class Container : public Object
+ { private:
+    Type m_var;
+   public:
+    Container(const Type& var) : Object()
+     { m_var = var; }
+
+    operator Type () const
+     { return m_var; }
+    operator Type* () const
+     { return &m_var; }
+ };

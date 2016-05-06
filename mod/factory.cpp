@@ -196,8 +196,7 @@ int Factory :: res_load_script(luavm vm)
     { std::string str = tmp;
       data = resManager->getResource(str);
       if(data)
-       { obj = new Object(str.c_str());
-         obj->stash = data;
+       { obj = new Container<Data*>(data);
          Manager::sendMessage(MSG_ADD_SCRIPT, obj, 0);
        }
     }
