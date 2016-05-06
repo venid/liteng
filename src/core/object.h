@@ -5,10 +5,7 @@
 #pragma once
 
 #include <atomic>
-#include "any.h"
 #include "mt/meta.h"
-
-#include <stdio.h>
 
 class Object
  {

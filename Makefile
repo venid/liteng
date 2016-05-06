@@ -4,13 +4,15 @@ FNAME= $(shell basename `pwd`)
 #имя отладочного исполняемого файла
 FNAME_DBG= $(FNAME)_dbg
 #директории проекта
-VPATH= util core lua mod glext res comp base inter math
+PATHS= util core lua mod glext res comp base inter math
+#путь к директориям проекта
+VPATH= $(addprefix src/, $(PATHS))
 #пути включения заголовочных файлов
-CPATH= $(addprefix -I, $(VPATH) .)
+CPATH= $(addprefix -I, $(VPATH) src)
 #подключаемые библиотеки
 LIB= -lrt -llua5.2 -lpthread -lX11 -lGL -lpng12 -lz -lm -lmeta
 #директория статических библиотек
-LPATH= -L./lib
+LPATH= -Lsrc/lib
 #файлы кода
 OBJFILE= $(notdir $(patsubst %.cpp, %.o, $(wildcard $(addsuffix /*cpp, $(VPATH)))))
 #директории для объектных файлов
@@ -21,6 +23,8 @@ R_FILE= $(addprefix $(R_DIR), $(OBJFILE))
 D_FILE= $(addprefix $(D_DIR), $(OBJFILE))
 #имя выходного файла
 TARGET=$< -o $@
+#файл версии
+FVERSION= $(shell find . -type f -name version.h)
 
 
 all: $(FNAME)
@@ -28,7 +32,7 @@ all: CFLAGS= -c -MMD -Wall -std=c++11 -DGLM_FORCE_RADIANS $(EXT)
 
 $(FNAME): $(R_FILE)
 	$(CXX) -Wl,--no-as-needed -o $@ $(LPATH) $(R_FILE) $(LIB)
-	lua .version util/version.h 3
+	lua .version $(FVERSION) 3
 
 $(R_DIR)%.o: %.cpp
 	$(CXX) $(CFLAGS) $(CPATH) $(TARGET)
