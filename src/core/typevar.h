@@ -42,6 +42,7 @@ struct Link
 #define vCAM_TURN       0x00000047
 #define vCAM_CONTROL    0x00000048
 #define vCAM_TYPE       0x00000049
+#define vCAM_CURSOR     0x0000004A
 
 #define vTRANSLATE      0x00000051
 #define vOPERATION      0x00000052

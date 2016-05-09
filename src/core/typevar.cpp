@@ -126,7 +126,7 @@ std::map<int, std::pair<void*(*)(), void(*)(void*)> > VarTable
   { vVECTOR_SCENE,   VEC(Object*)},
 
   { vCAMERA,         VAR(void*)},
-  { vCAM_POS,        {setVec3f, delVec3f}},
+  { vCAM_POS,        VAR(glm::vec3)},
   { vCAM_TRANSLATE,  {setMat4f, delMat4f}},
   { vCAM_VIEW,       {setMat4f, delMat4f}},
   { vCAM_MATRIX,     {setMat4f, delMat4f}},
@@ -135,6 +135,7 @@ std::map<int, std::pair<void*(*)(), void(*)(void*)> > VarTable
   { vCAM_TURN,       {setVec3f, delVec3f}},
   { vCAM_CONTROL,    {setInt, delInt}},
   { vCAM_TYPE,       {setInt, delInt}},
+  { vCAM_CURSOR,     VAR(glm::vec2)},
 
   { vTRANSLATE,      {setMat4f, delMat4f}},
   { vOPERATION,      {setOperation, delOperation}},

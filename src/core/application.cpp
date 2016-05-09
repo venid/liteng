@@ -30,7 +30,7 @@ bool Application::init(const char *configFile)
  }
 
 void Application :: start()
- { m_timer->getPeriodTime();
+ { m_timer.getPeriodTime();
    m_status.store(true, std::memory_order_relaxed);
  }
 

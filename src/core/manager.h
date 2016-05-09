@@ -24,8 +24,6 @@ class Manager
        std::queue<Message> qmes;
      };
 
-    static Manager *msgMan;
-
     std::mutex m_mtx;
     std::vector<Thread*> threads;
     std::vector<QModule*> qModule;
@@ -55,25 +53,12 @@ class Manager
 
     static bool Init();
     static void Clear();
-    static void Start() { msgMan->start(); };
+    static void Start();
 
     static unsigned int addThread(Thread* thr);
     static void addModule(Module* mdl);
 
-    static int sendMessage(int Msg, Object* obj, int param)
-     { int n;
-       msgMan->lock();
-       n = msgMan->put(Msg, obj, param);
-       msgMan->unlock();
-       return n;
-     }
-
-    static bool getMessage(int numQ, int &Msg, Object* &obj, int &param)
-     { bool result;
-       msgMan->lock();
-       result = msgMan->get(numQ, Msg, obj, param);
-       msgMan->unlock();
-       return result;
-     }
+    static int sendMessage(int Msg, Object* obj, int param);
+    static bool getMessage(int numQ, int &Msg, Object* &obj, int &param);
  };
 

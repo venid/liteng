@@ -49,8 +49,8 @@ int Physics :: init_update(double tm)
 int Physics :: run_update(double tm)
  { *mp_delta = tm;
 
-   for(auto &it : components)
-       it.second->update();
+   for(auto it = components.upper_bound(0); it != components.end(); it++)
+    (*it).second->update();
 
    return 1;
  }

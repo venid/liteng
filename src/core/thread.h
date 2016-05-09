@@ -10,17 +10,18 @@
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
+#include "timer.h"
 
 class Module;
-class Timer;
 
 class Thread
  {
   protected:
+   const double Lag = 0.02;
+
    unsigned int m_id;
    std::thread m_thread;
-   Timer *m_timer;
-   float m_lag;
+   Timer m_timer;
    std::vector<Module*> m_module;
 
    std::mutex m_mtx;

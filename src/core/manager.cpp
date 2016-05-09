@@ -7,7 +7,7 @@
 #include <thread>
 #include <chrono>
 
-Manager* Manager::msgMan = nullptr;
+Manager* msgMan = nullptr;
 
 void Manager :: start()
  { LOG_INFO("Manager: Start threads.");
@@ -168,6 +168,9 @@ void Manager :: Clear()
    delete msgMan;
  }
 
+void Manager :: Start()
+ { msgMan->start(); }
+
 unsigned int Manager :: addThread(Thread* thr)
  { int n;
    msgMan->lock();
@@ -178,3 +181,19 @@ unsigned int Manager :: addThread(Thread* thr)
 
 void Manager :: addModule(Module* mdl)
  { msgMan->add_module(mdl); }
+
+int Manager :: sendMessage(int Msg, Object* obj, int param)
+ { int n;
+   msgMan->lock();
+   n = msgMan->put(Msg, obj, param);
+   msgMan->unlock();
+   return n;
+ }
+
+bool Manager :: getMessage(int numQ, int &Msg, Object* &obj, int &param)
+ { bool result;
+   msgMan->lock();
+   result = msgMan->get(numQ, Msg, obj, param);
+   msgMan->unlock();
+   return result;
+ }

@@ -29,6 +29,12 @@ Module :: Module(const char* Name) : Object(Name, Object::genID())
 Module :: ~Module()
  { LOG_INFO("Module: Delete \"%s\"", getName()); }
 
+bool Module :: isComp(unsigned int Id)
+ { for(auto it : components)
+    if(it.second->getId() == Id) return true;
+   return false;
+ }
+
 void Module :: addMsg(unsigned int msg, Object* obj, const char* theName)
  { Meta::Base* base = obj->meta();
    Meta::Method mt = base->method(base->indexOfMethod(theName));
@@ -45,6 +51,7 @@ void Module :: addComp(Unit* un)
 
    for(auto &it : un->comp)
     { if(it->getModuleId() != Id) continue;
+      if(isComp(it->getId())) continue;
       i = 0;
       while(it->public_var[i])
        { def = it->public_var[i];
@@ -60,20 +67,11 @@ void Module :: addComp(Unit* un)
          it->linkVar(def, dat);
          i++;
        }
-      if(it->getPoint() != 0)
-       { it->init();
-         it->retain();
-         components.emplace(it->getPoint(), it);
-         it->connect(this);
-         LOG_DEBUG("%s: Add component id %i", getName(), it->getId());
-       }
-      else
-       { it->init();
-         it->retain();
-         staticComponents.push_back(it);
-         LOG_DEBUG("%s: Add static component id %i", getName(), it->getId());
-       }
-    }
+      it->init();
+      it->retain();
+      components.emplace(it->getPoint(), it);
+      it->connect(this);
+      LOG_SPAM("%s: Add component id %i", getName(), it->getId());    }
  }
 
 void Module :: delComp()
@@ -92,19 +90,6 @@ void Module :: delComp()
       it.second->release();
     }
    components.clear();
-
-   for(auto &it : staticComponents)
-    { i = 0;
-      while(it->public_var[i])
-       { vr = pool.find(it->public_var[i]);
-         if(vr != pool.end())
-          vr->second.refCount --;
-         i++;
-       }
-      it->clear();
-      it->release();
-    }
-   staticComponents.clear();
  }
 
 void Module :: delComp(unsigned int uID)
@@ -124,23 +109,6 @@ void Module :: delComp(unsigned int uID)
          it->second->release();
 
          it = components.erase(it);
-       }
-      else ++it;
-    }
-
-   for(auto it = staticComponents.begin(); it != staticComponents.end();)
-    { if( (*it)->getUnitId() == uID )
-       { i = 0;
-         while((*it)->public_var[i])
-          { vr = pool.find((*it)->public_var[i]);
-            if(vr != pool.end())
-             vr->second.refCount --;
-            i++;
-          }
-         (*it)->clear();
-         (*it)->release();
-
-         it = staticComponents.erase(it);
        }
       else ++it;
     }
@@ -165,12 +133,20 @@ unsigned int Module :: getModuleID(const char* Name)
 int Module :: update(double tm)
  { int tMsg, param;
    Object* pobj;
+   std::vector<std::pair<Object*, Meta::Method> > tmp;
 
    while(Manager::getMessage(getNumQueue(), tMsg, pobj, param))
     { auto ret = msgHandlers.equal_range(tMsg);
       if(ret.first != msgHandlers.end())
-       for(auto it = ret.first; it != ret.second; ++it)
-        it->second.second.invoke(it->second.first, {pobj, param});
+       { for(auto it = ret.first; it != ret.second; ++it)
+          tmp.push_back(it->second);
+
+         for(auto it : tmp)
+          it.second.invoke(it.first, {pobj, param});
+
+         tmp.erase(tmp.begin());
+         if(pobj) pobj->release();
+       }
     }
    return (this->*do_update)(tm);
  }

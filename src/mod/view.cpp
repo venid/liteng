@@ -61,8 +61,8 @@ bool View :: init(Lua::State &lua)
  }
 
 void View :: render()
- { for(auto &it : components)
-    it.second->update();
+ { for(auto it = components.upper_bound(0); it != components.end(); it++)
+    (*it).second->update();
    glXSwapBuffers(dpy, win);
  }
 

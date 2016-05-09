@@ -60,8 +60,8 @@ int Control :: run_update(double tm)
  { Keyboard::instance().update();
    Mousedevice::instance().update();
 
-   for(auto &it : components)
-       it.second->update();
+   for(auto it = components.upper_bound(0); it != components.end(); it++)
+    (*it).second->update();
 
    return 1;
  }
