@@ -60,8 +60,8 @@ int Control :: run_update(double tm)
  { Keyboard::instance().update();
    Mousedevice::instance().update();
 
-   for(auto &it : components)
-       it.second->update();
+   for(auto it = components.upper_bound(0); it != components.end(); it++)
+    (*it).second->update();
 
    return 1;
  }
@@ -80,9 +80,7 @@ void Control :: clear(Object* obj, int param)
  }
 
 void Control :: add(Object* pobj, int param)
- { addComp((Unit*)pobj);
-   pobj->release();
- }
+ { addComp((Unit*)pobj); }
 
 void Control :: addScript(Object* pobj, int param)
  { Data* data;
@@ -90,7 +88,6 @@ void Control :: addScript(Object* pobj, int param)
    if(pobj)
     { data = (Data*)pobj;
       lvm.load_data(data);
-      pobj->release();
     }
  }
 

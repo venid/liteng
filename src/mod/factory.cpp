@@ -140,14 +140,12 @@ void Factory :: clear(Object* obj, int param)
  { do_update = (MUpdate) &Factory::clear_update; }
 
 void Factory :: add(Object* pobj, int param)
- { if(((Object*)pobj)->release() == false)
-    entity.push_back((Unit*)pobj);
-   else LOG_ERROR("%s: неплановое удаление unit", getName());
+ { addComp((Unit*)pobj);
+   entity.push_back((Unit*)pobj);
  }
 
 void Factory :: make(Object* pobj, int param)
  { addComp((Unit*)pobj);
-   pobj->release();
    Manager::sendMessage(MSG_ADD_UNIT, pobj, 0);
    LOG_SPAM("%s: Message MSG_MAKE_UNIT", getName());
  }

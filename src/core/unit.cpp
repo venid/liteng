@@ -37,7 +37,6 @@ void Unit :: addComp(Component* cp)
       i++;
     }
    cp->setName(getName());
-   //cp->setId(getId());
    cp->setOwner(this);
    comp.push_back(cp);
  }

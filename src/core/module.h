@@ -20,7 +20,6 @@ class Module : public Object
     unsigned int numQueue;
 
     std::multimap<unsigned int, Component*> components;
-    std::vector<Component*> staticComponents;
 
     std::multimap<unsigned int,
                   std::pair<Object*, Meta::Method> > msgHandlers;
@@ -38,6 +37,8 @@ class Module : public Object
    public:
     Module(const char* Name);
     ~Module();
+
+    bool isComp(unsigned int Id);
 
     void setThreadID(unsigned int ID) {thrID = ID;}
     unsigned int  getThreadId() {return thrID;}

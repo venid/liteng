@@ -61,8 +61,8 @@ bool View :: init(Lua::State &lua)
  }
 
 void View :: render()
- { for(auto &it : components)
-    it.second->update();
+ { for(auto it = components.upper_bound(0); it != components.end(); it++)
+    (*it).second->update();
    glXSwapBuffers(dpy, win);
  }
 
@@ -261,6 +261,4 @@ void View :: clear(Object* obj, int param)
  }
 
 void View :: add(Object* pobj, int param)
- { addComp((Unit*)pobj);
-   pobj->release();
- }
+ { addComp((Unit*)pobj); }
