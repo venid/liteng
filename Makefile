@@ -4,7 +4,7 @@ FNAME= $(shell basename `pwd`)
 #имя отладочного исполняемого файла
 FNAME_DBG= $(FNAME)_dbg
 #директории проекта
-PATHS= util core lua mod glext res comp base inter math
+PATHS= util core lua mod glext res comp base inter math sys
 #путь к директориям проекта
 VPATH= $(addprefix src/, $(PATHS))
 #пути включения заголовочных файлов
@@ -24,7 +24,7 @@ D_FILE= $(addprefix $(D_DIR), $(OBJFILE))
 #имя выходного файла
 TARGET=$< -o $@
 #файл версии
-FVERSION= $(shell find . -type f -name version.h)
+FVERSION= $(shell find . -type f -name main.cpp)
 
 
 all: $(FNAME)
@@ -32,7 +32,7 @@ all: CFLAGS= -c -MMD -Wall -std=c++11 -DGLM_FORCE_RADIANS $(EXT)
 
 $(FNAME): $(R_FILE)
 	$(CXX) -Wl,--no-as-needed -o $@ $(LPATH) $(R_FILE) $(LIB)
-	lua .version $(FVERSION) 3
+	lua .build $(FVERSION)
 
 $(R_DIR)%.o: %.cpp
 	$(CXX) $(CFLAGS) $(CPATH) $(TARGET)

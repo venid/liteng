@@ -17,15 +17,14 @@ class Log
  {
   public:
    enum Level : unsigned char
-    { Critical = 0x01,
-      Error    = 0x02,
-      Warning  = 0x04,
-      Debug    = 0x08,
-      Info     = 0x10,
-      Spam     = 0x20
+    { Error    = 0x01,
+      Warning  = 0x02,
+      Debug    = 0x04,
+      Info     = 0x08,
+      Spam     = 0x10
     };
 
-   static bool Init(unsigned char logLevel, const char *pszLogName, const char* title, const char* ver);
+   static bool Init(unsigned char logLevel, const char *pszLogName, const char* title);
 
    static void Clear();
 
@@ -69,10 +68,6 @@ class Log
 
    void rec(Level nSev, const char *pszMessage, int line, const char *file);
  };
-
-#define LOG_CRIT(str, ...) \
- Log::GetRef().rec_format(Log::Critical, __LINE__, __FILE__, str, ##__VA_ARGS__);\
- assert(0)
 
 #define LOG_ERROR(str, ...) \
  Log::GetRef().rec_format(Log::Error, __LINE__, __FILE__, str, ##__VA_ARGS__)

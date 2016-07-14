@@ -1,0 +1,13 @@
+
+f = assert(io.open(arg[1], "r"))
+str = f:read("*a")
+f:close()
+
+tmp = string.match(str, "build %d+")
+number = string.match(tmp, "(%d+)")
+str = string.gsub(str, "build %d+",  "build " .. (number + 1))
+print("Build number " ..number)
+
+f = io.open(arg[1], "w")
+f:write(str)
+f:close()

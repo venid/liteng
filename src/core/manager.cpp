@@ -148,7 +148,7 @@ bool Manager :: Init()
       return true;
     }
    if(msgMan == nullptr)
-    { LOG_CRIT("Manager: Not init.");
+    { LOG_ERROR("Manager: Not init.");
       return false;
     }
    LOG_INFO("Manager: Init.");

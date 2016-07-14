@@ -1,16 +1,17 @@
 
-#include "version.h"
 #include "log.h"
 #include "application.h"
 #include "manager.h"
 #include "input.h"
 
-Version VERSION;
+#define TITLE "----- Little engine -----\n Version 0.02.1  build 820"
 
 int main(int argc, char *argv[])
- { if(!Log::Init(Log::Critical | Log::Error | Log::Warning | Log::Debug | Log::Info,
-                    "liteng", "----- Little engine -----", VERSION.get())) return 1;
+ { if(!Log::Init(Log::Error | Log::Warning | Log::Debug | Log::Info, "liteng", TITLE))
+    return 1;
+
    if(!Manager::Init()) return 2;
+
    Keyboard::Init();
    Mousedevice::Init();
 

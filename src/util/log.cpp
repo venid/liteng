@@ -13,7 +13,7 @@ Log :: Log()
 Log :: ~Log()
  { if(m_timer) delete m_timer; }
 
-bool Log :: Init(unsigned char logLevel, const char *pszLogName, const char* title, const char* ver)
+bool Log :: Init(unsigned char logLevel, const char *pszLogName, const char* title)
  { time_t now;
    struct tm *when;
 
@@ -31,11 +31,9 @@ bool Log :: Init(unsigned char logLevel, const char *pszLogName, const char* tit
     { char buff[40];
       strftime(buff, 40, "Started %F  %T", when);
       m_pSingleton->m_ofLog << std::endl << title << std::endl;
-      m_pSingleton->m_ofLog << "  Version " << ver << std::endl;
       m_pSingleton->m_ofLog << buff << std::endl;
       m_pSingleton->m_ofLog.flush();
       std::cout << std::endl << title << std::endl;
-      std::cout << "  Version " << ver << std::endl;
       std::cout << buff << std::endl;
     }
    return true;
@@ -66,12 +64,7 @@ void Log :: rec(Level nSev, const char *pszMessage, int line, const char *file)
    double tm = m_timer->getCurrentTime() - m_tm;
 
    switch(nSev)
-    { case Critical:
-       sprintf(buffer, "CRITICAL  [%07.2f]  %s:%d: ", tm, file, line);
-       std::cout << "\033[37;1;41m" << buffer << pszMessage << "\033[0m" << std::endl;
-       if(IsLogged(nSev)) { m_ofLog << buffer << pszMessage << std::endl; }
-       break;
-      case Error:
+    { case Error:
        sprintf(buffer, "ERROR     [%07.2f]  %s:%d: ", tm, file, line);
        std::cout << "\033[37;1;41m" << buffer << pszMessage << "\033[0m" << std::endl;
        if(IsLogged(nSev)) { m_ofLog << buffer << pszMessage << std::endl; }
