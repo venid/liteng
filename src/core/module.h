@@ -9,6 +9,7 @@
 class Component;
 class Unit;
 class Module;
+class System;
 
 typedef int(Module::* MUpdate)(double);
 
@@ -18,6 +19,8 @@ class Module : public Object
     bool action;
     unsigned int thrID;
     unsigned int numQueue;
+
+    std::multimap<unsigned int, System*> m_systems;
 
     std::multimap<unsigned int, Component*> components;
 
@@ -52,6 +55,8 @@ class Module : public Object
     void addComp(Unit*);
     void delComp();
     void delComp(unsigned int uID);
+
+    void addSystem(System*);
 
     void del_var();
 

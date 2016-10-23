@@ -9,6 +9,8 @@
 #include "module.h"
 #include "timer.h"
 
+#include "oglrender.h"
+
 Application *app;
 int main_thread(luavm vm);
 int new_thread(luavm vm);
@@ -102,6 +104,7 @@ int main_thread(luavm vm)
        { md = vr;
          if(md->isSuperClass(Module::Instance))
           { ((Module*)md)->setThreadID(id);
+            ((Module*)md)->addSystem(new Systems::Render()); //<--------------------------
             Manager::addModule((Module*)md);
           }
        }

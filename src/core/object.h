@@ -17,7 +17,7 @@ class Object
    Meta::Base *metaClass;
 
   public:
-   Object();
+   Object(unsigned int theId = 0);
    Object(const char* theName, unsigned int theId = 0);
    virtual ~Object();
 

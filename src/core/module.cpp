@@ -1,6 +1,7 @@
 
 #include "module.h"
 #include "component.h"
+#include "system.h"
 #include "unit.h"
 #include "log.h"
 #include "typevar.h"
@@ -114,6 +115,9 @@ void Module :: delComp(unsigned int uID)
     }
  }
 
+void Module :: addSystem(System* sys)
+ { m_systems.emplace(0, sys); }
+
 void Module :: del_var()
  { for(auto it = pool.begin(), ite = pool.end(); it != ite;)
     { if(it->second.refCount < 1)
@@ -148,5 +152,9 @@ int Module :: update(double tm)
          if(pobj) pobj->release();
        }
     }
+   
+   for(auto it : m_systems)
+    it.second->update(0.0);
+   
    return (this->*do_update)(tm);
  }

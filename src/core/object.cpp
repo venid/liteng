@@ -8,7 +8,7 @@ META_OBJECT(Object, Object, nullptr)
 
 std::atomic<unsigned int> volumeID(1);
 
-Object :: Object() : atf(ATOMIC_FLAG_INIT), id(0), ref_count(1), metaClass(&Instance)
+Object :: Object(unsigned int theId) : atf(ATOMIC_FLAG_INIT), id(theId), ref_count(1), metaClass(&Instance)
  { name = nullptr;
    LOG_DEBUG("Object: The object created by the default constructor");
  }
