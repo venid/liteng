@@ -1,28 +1,21 @@
 
 #include "log.h"
 #include <time.h>
-#include "timer.h"
-
-Log* Log::m_pSingleton = nullptr;
 
 Log :: Log()
- { m_timer = new Timer;
-   m_tm = m_timer->getCurrentTime();
- }
+ { timespec curTime;
+   clock_gettime(CLOCK_MONOTONIC, &curTime);
+   m_tm = (double)curTime.tv_sec + (double)curTime.tv_nsec * 0.000000001;
 
-Log :: ~Log()
- { if(m_timer) delete m_timer; }
+ }
 
 bool Log :: Init(unsigned char logLevel, const char *pszLogName, const char* title)
  { time_t now;
    struct tm *when;
 
-   if (m_pSingleton == nullptr)
-    m_pSingleton = new Log();
-   if(m_pSingleton == nullptr) return false;
-   m_pSingleton->m_fileName = pszLogName;
-   m_pSingleton->m_logLevel = logLevel;
-   m_pSingleton->LogSwitch();
+   GetRef().m_fileName = pszLogName;
+   GetRef().m_logLevel = logLevel;
+   GetRef().LogSwitch();
 
    time(&now);
    when = localtime(&now);
@@ -30,9 +23,9 @@ bool Log :: Init(unsigned char logLevel, const char *pszLogName, const char* tit
    if(when != nullptr)
     { char buff[40];
       strftime(buff, 40, "Started %F  %T", when);
-      m_pSingleton->m_ofLog << std::endl << title << std::endl;
-      m_pSingleton->m_ofLog << buff << std::endl;
-      m_pSingleton->m_ofLog.flush();
+      GetRef().m_ofLog << std::endl << title << std::endl;
+      GetRef().m_ofLog << buff << std::endl;
+      GetRef().m_ofLog.flush();
       std::cout << std::endl << title << std::endl;
       std::cout << buff << std::endl;
     }
@@ -46,22 +39,24 @@ void Log :: Clear()
    time(&now);
    when = localtime(&now);
 
-   m_pSingleton->lock();
+   GetRef().lock();
    if(when != nullptr)
     { char buff[40];
       strftime(buff, 40, "Stopping %F  %T\n", when);
-      m_pSingleton->m_ofLog << buff << std::endl;
-      m_pSingleton->m_ofLog.flush();
+      GetRef().m_ofLog << buff << std::endl;
+      GetRef().m_ofLog.flush();
 
       std::cout << buff << std::endl;
     }
-   m_pSingleton->unlock();
-   delete m_pSingleton;
+   GetRef().m_logLevel = 0;
+   GetRef().unlock();
  }
 
 void Log :: rec(Level nSev, const char *pszMessage, int line, const char *file)
  { char buffer[128];
-   double tm = m_timer->getCurrentTime() - m_tm;
+   timespec curTime;
+   clock_gettime(CLOCK_MONOTONIC, &curTime);
+   double tm = (double)curTime.tv_sec + (double)curTime.tv_nsec * 0.000000001 - m_tm;
 
    switch(nSev)
     { case Error:

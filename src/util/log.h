@@ -11,8 +11,6 @@
 #include <mutex>
 #include <assert.h>
 
-class Timer;
-
 class Log
  {
   public:
@@ -28,7 +26,10 @@ class Log
 
    static void Clear();
 
-   static Log& GetRef() { return *m_pSingleton; }
+   inline static Log& GetRef()
+    { static Log log;
+      return log;
+    }
 
    void rec_format(Level nSev, int line, const char *file, const char *pszFormat, ...)
     { char buffer[512];
@@ -43,17 +44,14 @@ class Log
     }
 
   protected:
-   static Log   *m_pSingleton;
    std::string   m_fileName;
    std::ofstream m_ofLog;
    unsigned char m_logLevel = 0;
    std::mutex    m_mutex;
 
    double        m_tm;
-   Timer*        m_timer;
 
    Log();
-   ~Log();
 
    void LogSwitch()
     { std::string path = m_fileName + ".log";

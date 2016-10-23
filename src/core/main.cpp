@@ -4,7 +4,7 @@
 #include "manager.h"
 #include "input.h"
 
-#define TITLE "----- Little engine -----\n Version 0.02.1  build 820"
+#define TITLE "----- Little engine -----\n Version 0.02.1  build 822"
 
 int main(int argc, char *argv[])
  { if(!Log::Init(Log::Error | Log::Warning | Log::Debug | Log::Info, "liteng", TITLE))
